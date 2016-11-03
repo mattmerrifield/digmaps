@@ -1,0 +1,20 @@
+version: '2'
+services: 
+  db:
+    image: postgres
+    ports:
+      - "5432:5432"
+
+  digmaps:
+    image: digmaps
+    ports:
+      - "8080:8080"
+    volumes:
+      - apps:/apps
+      - sites:/sites
+        
+volumes:
+  - apps:"../apps"
+  - sites:"../sites"
+    
+

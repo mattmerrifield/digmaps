@@ -1,0 +1,5 @@
+# DIR is the absolute path to this particular shell script, in the $REPO/docker directory
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+dockerfile="$DIR/Dockerfile"
+context="$DIR/.."
+docker build -f $dockerfile $context
