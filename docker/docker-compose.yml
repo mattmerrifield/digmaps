@@ -1,20 +1,20 @@
 version: '2'
 services: 
   db:
+    container_name: db
     image: postgres
     ports:
       - "5432:5432"
 
   digmaps:
+    container_name: digmaps
     image: digmaps
     ports:
       - "8080:8080"
+    # command: /bin/bash -c "while true; do echo mark; sleep 2; done"
+    command: "python3 ./src/manage.py runserver 0.0.0.0:8080"
     volumes:
-      - apps:/apps
-      - sites:/sites
-        
-volumes:
-  - apps:"../apps"
-  - sites:"../sites"
+      - "..:/digmaps"
+    working_dir: /digmaps
     
 
