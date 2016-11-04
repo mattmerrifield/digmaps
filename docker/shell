@@ -1,1 +1,6 @@
-docker exec -i -t digmaps bash
+if [[ "$1" != "" ]]; then
+    CONTAINER="$1"
+else
+    CONTAINER=digmaps
+fi
+docker exec -i -t $CONTAINER bash

@@ -5,6 +5,8 @@ services:
     image: postgres
     ports:
       - "5432:5432"
+    volumes:
+      - "./data:/docker-entrypoint-initdb.d"
 
   digmaps:
     container_name: digmaps
@@ -16,5 +18,5 @@ services:
     volumes:
       - "..:/digmaps"
     working_dir: /digmaps
-    
+
 
