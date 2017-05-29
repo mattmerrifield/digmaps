@@ -1,0 +1,12 @@
+# onbuild docker image automatically runs pip install on requirements.txt
+FROM python:3-onbuild
+
+# Additional utilities
+RUN apt-get update && apt-get install -y \
+    postgresql-client \
+    binutils \
+    libproj-dev \
+    gdal-bin \
+    postgresql-server-dev-all
+
+

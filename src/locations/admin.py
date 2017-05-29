@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import SiteFunction, SiteType, Site, Geology, BurialType, Region, Period, Citation
+from .models import Site, Region, Period, Citation
 
 
 class SiteAdmin(admin.ModelAdmin):
@@ -33,10 +33,6 @@ class PeriodAdmin(NameDescriptionAdmin):
     list_display = ('shortname', 'name', 'description')
 
 admin.site.register(Site)
-admin.site.register(SiteFunction, NameDescriptionAdmin)
-admin.site.register(SiteType, NameDescriptionAdmin)
-admin.site.register(Geology, NameDescriptionAdmin)
-admin.site.register(BurialType, NameDescriptionAdmin)
 admin.site.register(Region, RegionAdmin)
 admin.site.register(Period, PeriodAdmin)
 admin.site.register(Citation)

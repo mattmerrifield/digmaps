@@ -1,16 +1,23 @@
 version: '2'
-services: 
+services:
   db:
     container_name: db
     image: postgres
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile-postgis
     ports:
       - "5432:5432"
     volumes:
       - "./data:/docker-entrypoint-initdb.d"
 
-  digmaps:
-    container_name: digmaps
+  app:
+    container_name: app
     image: digmaps
+    build:
+      context: ..                              # Path relative to this file
+      dockerfile: ./docker/Dockerfile-digmaps  # Path relative to context var
+
     ports:
       - "8080:8080"   # Main application port
       - "8000:8000"   # Secondary debugging port (nothing runs here by default)
@@ -18,9 +25,18 @@ services:
     volumes:
       - "..:/digmaps"
     working_dir: /digmaps
-    build:
-      context: ..                              # Path relative to this file
-      dockerfile: ./docker/digmaps-dockerfile  # Path relative to context var
+
+  jupyter:
+    container_name: jupyter
+    image: digmaps
+    command: "python3 ./src/manage.py shell_plus --notebook"
+    ports:
+      - "8888:8888"
+    volumes:
+      - "..:/digmaps"
+    working_dir: /digmaps
+
+
 
 
 

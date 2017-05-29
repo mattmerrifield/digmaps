@@ -2,3 +2,7 @@ django
 djangorestframework
 psycopg2
 factory_boy
+pandas
+ipython
+jupyter
+django-extensions
