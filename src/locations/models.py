@@ -1,109 +1,138 @@
-from django.db import models
-
-class SiteType(models.Model):
-    """
-    Different Types of archeological site
-    """
-    name = models.CharField(max_length=50)
-    description = models.TextField()
-
-    def __str__(self):
-        return "{}".format(self.name)
-
-
-class BurialType(models.Model):
-    """
-    Different types of burials
-    """
-    name = models.CharField(max_length=50)
-    description = models.TextField()
-
-    def __str__(self):
-        return "{}".format(self.name)
-
-
-class SiteFunction(models.Model):
-    """
-    Different uses for a given site
-    """
-
-    name = models.CharField(max_length=50)
-    description = models.TextField()
-
-    def __str__(self):
-        return "{}".format(self.name)
+from django.db import models, transaction
 
 
 class Citation(models.Model):
     """
     An academic citation (short form)
     """
-    author = models.CharField(max_length=50)
-    publication = models.TextField()
+    site = models.ForeignKey('Site')
+    publication = models.ForeignKey('bibliography.Publication')
+    external_id = models.CharField(max_length=100,
+                                   help_text="The ID number assigned to the "
+                                             "site by the publication "
+                                             "authors (e.g. 'ASI85-35' or "
+                                             "'BSL-123'")
 
     def __str__(self):
         return "{}".format(self.author)
 
 
-class Geology(models.Model):
+class SiteRegion(models.Model):
     """
-    A classification of geological features, e.g. how hard are the rocks? How
-    sandy is region? Rainfall? You know. Geology and shit.
+    When tagging a site with a region, also tag that site with all parent regions
     """
-    class Meta:
-        verbose_name_plural = "geologies"
+    site = models.ForeignKey(Site)
+    region = models.ForeignKey(Region)
 
-    name = models.CharField(max_length=50)
-    description = models.TextField()
+    def save(self, *args, **kwargs):
+        with transaction.atomic():
+            # Also associate with all parent regions
+            for p in self.region.parents:
+                SiteRegion.objects.get_or_create(site=self.site, region=p)
+            # Clear association with
+            children = self.region.children
 
-    def __str__(self):
-        return "{}".format(self.name)
+    def delete(self, using=None, keep_parents=False):
+        pass
+
 
 
 class Region(models.Model):
     """
-    A general area.
+    A general geographical area.
     """
-    parent = models.ForeignKey("self", null=True, blank=True)
+    class Meta:
+        default_related_name = 'regions'
+
+    parent = models.ForeignKey("self", null=True, blank=True, related_name='children')
     name = models.CharField(max_length=50)
     description = models.TextField()
 
+    def parents(self, include_self=True, depth=None):
+        """
+        Returns a list of Regions for whom self is a sub-region
+        """
+        family = [self] if include_self else []
+        parent = self.parent
+        while parent is not None:
+            family.append(parent)
+            parent = parent.parent
+
+    def sub_regions(self, include_self=True):
+        family = [self] if include_self else []
+        for r in self.children:
+            family.extend(r.sub_regions())
+        return family
+
     def __str__(self):
         return "{}".format(self.name)
-
-
-class Period(models.Model):
-    """
-    An archeological period, e.g. "Early Bronze Age"
-    """
-    shortname = models.CharField(max_length=50, unique=True)  # e.g. EBIV
-    name = models.CharField(max_length=50)       # e.g. Early Bronze IV
-    description = models.TextField()
-
-    def __str__(self):
-        return self.shortname
 
 
 class Site(models.Model):
     """
     An archaeological site.
     """
-    site_id = models.IntegerField()  # ID the site survey uses
     modern_name = models.CharField(max_length=50, null=True, blank=True)
     ancient_name = models.CharField(max_length=50, null=True, blank=True)
     lat = models.FloatField(null=True, blank=True)
     lon = models.FloatField(null=True, blank=True)
-    site_size = models.FloatField(help_text="Area in Hectares", null=True, blank=True)
-
-    # Basic Descriptors
-    region = models.ForeignKey(Region, null=True, blank=True)
-    geology = models.ManyToManyField(Geology, null=True, blank=True)
-    site_type = models.ForeignKey(SiteType, null=True, blank=True)
-    burial_type = models.ManyToManyField(BurialType, null=True, blank=True)
-    site_function = models.ManyToManyField(SiteFunction, null=True, blank=True)
-    reference = models.ManyToManyField(Citation, null=True, blank=True)
-    period = models.ManyToManyField(Period, null=True, blank=True)
-
+    area = models.FloatField(help_text="Area in Hectares", null=True, blank=True)
+    references = models.ManyToManyField(through=Citation)
     notes = models.TextField(default="")
 
+    region = models.ForeignKey(Region, null=True, blank=True)
 
+
+class SiteTag(models.Model):
+    """
+    Standard Through-model for tagging a site, but allows the "maybe" flag to
+    be set for the relationship
+    """
+    uncertain = models.BooleanField(default=False, help_text="Evidence for for this tag on this site is not conclusive")
+
+
+class Tag(models.Model):
+    """
+    Important characteristics of an archaeological site
+
+    Examples:
+        - Tel
+        - Fortification
+        - EBIV
+        -
+
+    """
+
+    shortname = models.CharField(max_length=10, unique=True)  # e.g. EBIV
+    name = models.CharField(max_length=50)
+    description = models.TextField()
+    sites = models.ManyToManyField(Site, related_name='tags', through='SiteTag')
+
+
+class Period(Tag):
+    """
+    An archaeological period, e.g. "Early Bronze Age"
+
+    Semantically, a SiteTag with extra metadata
+    """
+    start = models.DateField(help_text="Approximate Beginning")
+    end = models.DateField(help_text="Approximate Ending")
+
+    def __str__(self):
+        return self.shortname
+
+
+class Burial(Tag):
+    """
+    A Site might contain Burial structure, but it will only be tagged with
+    one of these possible types
+    """
+    BURIAL_TYPES = [
+        ('tomb', 'Tomb'),
+        ('carins', 'Carins'),
+        ('cemetary', 'Cemetary'),
+    ]
+    type = models.CharField(maxlenght=50, choices=BURIAL_TYPES)
+
+    class Meta:
+        unique_together = ('site_id', 'type')
