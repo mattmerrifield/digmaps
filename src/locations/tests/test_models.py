@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from src.locations.test.factories import RegionFactory
+from locations.tests.factories import RegionFactory
 
 
 class RegionTest(TestCase):
@@ -8,6 +8,7 @@ class RegionTest(TestCase):
     Test the functionality of the recursive parent/child relationship that
     Region objects will store.
     """
+    @classmethod
     def setUpTestData(cls):
         cls.parent = RegionFactory()
 
@@ -27,7 +28,7 @@ class RegionTest(TestCase):
         A grand child can easily find the whole family tree
         """
         expected = [self.great1a_1, self.grand1a, self.child1, self.parent]
-        observed = self.great1a_1.parents()
+        observed = self.great1a_1.parent_regions()
         self.assertEqual(expected, observed)
 
     def test_upwards_traversal_no_self(self):
@@ -35,15 +36,15 @@ class RegionTest(TestCase):
         Optionally, don't return the "self" region
         """
         expected = [self.grand1a, self.child1, self.parent]
-        observed = self.great1a_1.parents(include_self=False)
+        observed = self.great1a_1.parent_regions(include_self=False)
         self.assertEqual(expected, observed)
 
     def test_downward_traversal(self):
         """
         A grand child can easily find the whole family tree
         """
-        expected = [self.great1a_1, self.grand1a, self.child1, self.parent]
-        observed = self.child1.sub_regions()
+        observed = self.child1.child_regions()
+        expected = [self.great1a_1, self.great1a_2, self.grand1a, self.grand1b, self.child1]
         self.assertEqual(expected, observed)
 
     def test_downwards_traversal_no_self(self):
@@ -51,6 +52,6 @@ class RegionTest(TestCase):
         Optionally, don't return the "self" region
         """
         expected = [self.great1a_1, self.great1a_2, self.grand1a, self.grand1b]
-        observed = self.child1.sub_regions(include_self=False)
+        observed = self.child1.child_regions(include_self=False)
         self.assertEqual(expected, observed)
 

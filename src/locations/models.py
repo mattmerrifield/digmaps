@@ -1,4 +1,3 @@
-from django.contrib.gis.db.models import PointField
 from django.db import models
 
 
@@ -40,27 +39,28 @@ class Region(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField()
 
-    def parents(self, include_self=True, depth=None):
+    def parent_regions(self, include_self=True, depth=None):
         """
         Returns a list of Regions for whom self is a sub-region
         """
-        family = [self] if include_self else []
+        ancestors = [self] if include_self else []
         parent = self.parent
         while parent is not None:
-            family.append(parent)
+            ancestors.append(parent)
             parent = parent.parent
+        return ancestors
 
-    def sub_regions(self, include_self=True):
+    def child_regions(self, include_self=True):
         family = []
-        for r in self.children:
-            family.extend(r.sub_regions())
+        for r in self.children.all():
+            family.extend(r.child_regions())
         if include_self:
             family.append(
                 self)  # Parent goes last, to follow recursion pattern
         return family
 
     def __str__(self):
-        return "{}".format(self.name)
+        return "{} {}".format(self.id, self.name)
 
 
 class Site(models.Model):
@@ -69,7 +69,7 @@ class Site(models.Model):
     """
     modern_name = models.CharField(max_length=50, null=True, blank=True)
     ancient_name = models.CharField(max_length=50, null=True, blank=True)
-    coordinates = PointField()
+
     area = models.FloatField(null=True, blank=True, help_text="Area in Hectares",)
     references = models.ManyToManyField('bibliography.Publication', through=Citation)
     notes = models.TextField(default="")

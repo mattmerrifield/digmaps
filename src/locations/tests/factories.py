@@ -1,5 +1,5 @@
 from factory import DjangoModelFactory
-from src.locations.models import Region
+from locations.models import Region
 
 
 class RegionFactory(DjangoModelFactory):
