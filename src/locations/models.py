@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.gis.db.models import PointField
 
 
 class Citation(models.Model):
@@ -14,30 +15,18 @@ class Citation(models.Model):
     )
 
     def __str__(self):
-        return "{}".format(self.author)
-
-
-class SiteRegion(models.Model):
-    """
-    When tagging a site with a region, also tag that site with all parent
-    regions
-    """
-    site = models.ForeignKey('Site')
-    region = models.ForeignKey('Region')
+        return "{}".format(self.publication)
 
 
 class Region(models.Model):
     """
     A general geographical area.
+
+    Can be nested. Be cautious when making queries for sites in a given region
     """
-
-    class Meta:
-        default_related_name = 'regions'
-
-    parent = models.ForeignKey("self", null=True, blank=True,
-                               related_name='children')
     name = models.CharField(max_length=50)
     description = models.TextField()
+    parent = models.ForeignKey("self", null=True, blank=True, related_name='children')
 
     def parent_regions(self, include_self=True, depth=None):
         """
@@ -69,11 +58,10 @@ class Site(models.Model):
     """
     modern_name = models.CharField(max_length=50, null=True, blank=True)
     ancient_name = models.CharField(max_length=50, null=True, blank=True)
-
+    coordinates = PointField()
     area = models.FloatField(null=True, blank=True, help_text="Area in Hectares",)
     references = models.ManyToManyField('bibliography.Publication', through=Citation)
     notes = models.TextField(default="")
-
     region = models.ForeignKey(Region, null=True, blank=True)
 
 
@@ -101,9 +89,7 @@ class Tag(models.Model):
         - Fortification
         - EBIV
         -
-
     """
-
     shortname = models.CharField(max_length=10, unique=True)  # e.g. EBIV
     name = models.CharField(max_length=50)
     description = models.TextField()
@@ -117,8 +103,8 @@ class Period(Tag):
 
     Semantically, a SiteTag with extra metadata
     """
-    start = models.DateField(help_text="Approximate Beginning")
-    end = models.DateField(help_text="Approximate Ending")
+    start = models.IntegerField(help_text="Approximate Beginning (BCE is negative)")
+    end = models.IntegerField(help_text="Approximate Ending (BCE is negative)")
 
     def __str__(self):
         return self.shortname

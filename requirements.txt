@@ -6,3 +6,5 @@ pandas
 ipython
 jupyter
 django-extensions
+djangorestframework
+openpyxl
