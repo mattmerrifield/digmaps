@@ -92,7 +92,7 @@ class Tag(models.Model):
     """
     shortname = models.CharField(max_length=10, unique=True)  # e.g. EBIV
     name = models.CharField(max_length=50)
-    description = models.TextField()
+    description = models.TextField(default='')
     sites = models.ManyToManyField(Site, related_name='tags',
                                    through='SiteTag')
 
