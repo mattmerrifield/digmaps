@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from locations.serializers_excel import SiteSerializer
+from locations import parse_excel
 from pprint import pprint
 print = pprint
 
@@ -14,6 +14,7 @@ class SerializerTestCase(TestCase):
         """
         Don't fuck it up
         """
+        # This is, roughly speaking, what a row of excel data looks like
         record = {
             "AutoID":                               1,
             "Site ID":                              'ASI49-14',
@@ -24,7 +25,7 @@ class SerializerTestCase(TestCase):
             "Easting-Long":                         35.030066769,
             "Northing-Lat":                         32.570052158,
             "SiteSize":                             '',
-            "Region":                               '',
+            "Region":                               'TestRegion',
             "GeologicType":                         '',
             "SiteType":                             'Surface',
             "SiteFunction":                         'Unknown',
@@ -53,10 +54,4 @@ class SerializerTestCase(TestCase):
             "Late Bronze II":                       0,
             "Late Bronze III":                      0,
         }
-        s = SiteSerializer(data=record)
-        print("IS VALID?")
-        print(s.is_valid())
-        print(s.errors)
-        print("DONE VALID")
-        print(s.data)
-        print(s.instance)
+        site = parse_excel.parse_site(record)
