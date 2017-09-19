@@ -15,7 +15,7 @@ class SiteRecord(object):
         self.row = row
 
     @property
-    def tags(self):
+    def period_tags(self):
         """
         Get or create all the period tags this record should have.
         """
@@ -42,17 +42,33 @@ class SiteRecord(object):
         }
         tags = []
         for desc, short in period_names.items():
-            should_tag = self.row[desc]
-            if should_tag:
+            has_tag = self.row[desc]
+            if has_tag:
                 t, _ = models.Period.objects.get_or_create(
                     shortname=short,
                     defaults={
-                        'description': desc
+                        'description': desc,
                         'start': 0,
                         'end': 0,
                     })
                 tags.append(t)
         return tags
+
+    @property
+    def site_use_tags(self):
+        """
+        Get or create all the
+        :return:
+        """
+        return []
+
+    @property
+    def burial_tags(self):
+        """
+        Carins, Cemetary,
+        :return:
+        """
+        return []
 
     @property
     def coordinates(self):
@@ -70,7 +86,10 @@ class SiteRecord(object):
     @property
     def references(self):
         references, _ = bibliography.models.Publication.objects.get_or_create(
-            authors=self.row['Reference']
+            site_id=self.row['Site ID'],
+            defaults={
+                'title': self.row['Reference'],
+            }
         )
         return [references]
 
@@ -89,4 +108,10 @@ class SiteRecord(object):
                 region=self.region,
             )
         return site
+
+
+def load_from_excel(filename):
+    wb = openpyxl.load_workbook(filename)
+    s1 = wb.worksheets[0]
+
 
