@@ -23,3 +23,6 @@ class Publication(models.Model):
     title = models.CharField(max_length=100)
     citation_text = models.TextField(default='', help_text="Appropriately formatted citation string for this publication")
     authors = models.ManyToManyField(Author)
+
+    def __str__(self):
+        return self.title

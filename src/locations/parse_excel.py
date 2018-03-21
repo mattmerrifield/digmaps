@@ -89,10 +89,13 @@ class SiteRecord(object):
                 yield f
 
     def references(self):
-        references, _ = bibliography.models.Publication.objects.get_or_create(
-            title=self.row['Reference'],
-        )
-        return [references]
+        references = []
+        for title in self.row['Reference'].split(';'):
+            r, _ = bibliography.models.Publication.objects.get_or_create(
+                title=title,
+            )
+            references.append(r)
+        return references
 
     def region(self):
         region, _ = Region.objects.get_or_create(
@@ -108,14 +111,16 @@ class SiteRecord(object):
             region = self.region()
             site, _ = Site.objects.get_or_create(
                 code=self.row['Site ID'],
-                population=self.row['PopulationEstimate'],
-                coordinates=Point(self.row.get('Easting-Lon'), self.row.get('Northing-Lat')),
-                modern_name=self.row['Modern Name'],
-                ancient_name=self.row['Ancient Name'],
-                area=self.row['SiteSize'],
-                notes=self.row['Notes'],
-                notes_easting_northing="Original Coordinates: {Easting}/{Northing}".format(**self.row),
-                region=region,
+                defaults=dict(
+                    population=self.row['PopulationEstimate'],
+                    coordinates=Point(self.row.get('Easting-Lon'), self.row.get('Northing-Lat')),
+                    modern_name=self.row['Modern Name'],
+                    ancient_name=self.row['Ancient Name'],
+                    area=self.row['SiteSize'],
+                    notes=self.row['Notes'],
+                    notes_easting_northing="Original Coordinates: {Easting}/{Northing}".format(**self.row),
+                    region=region,
+                )
             )
             site.save()
             for period in self.periods():
