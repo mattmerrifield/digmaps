@@ -1,4 +1,4 @@
-version: '3'
+version: '2'
 services:
   db:
     image: postgres
@@ -21,7 +21,7 @@ services:
     volumes:
       - "..:/digmaps"
     working_dir: /digmaps/src
-    command: "python3 ./manage.py runserver 0.0.0.0:8080"
+    command: bash -c "python3 manage.py migrate && python3 ./manage.py runserver 0.0.0.0:8080"
 
   jupyter:
     image: digmaps

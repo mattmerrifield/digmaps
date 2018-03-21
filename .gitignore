@@ -90,3 +90,6 @@ ENV/
 
 # Docker initialization
 docker/data
+
+# Excel data
+*.xlsx

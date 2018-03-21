@@ -1,4 +1,4 @@
-import openpyxl
+import pandas as pd
 from django.db import transaction
 
 import bibliography.models
@@ -127,8 +127,9 @@ class SiteRecord(object):
 
 
 def parse_workbook(file_name):
-    wb = openpyxl.load_workbook(file_name)
-    sheet = wb.worksheets['sheet1']
+    xls = pd.ExcelFile(file_name)
+    df = xls.parse(xls.sheet_names[0])
+    return df.to_dict()
 
 
 
