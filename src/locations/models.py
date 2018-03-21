@@ -26,19 +26,19 @@ class Site(models.Model):
     )
 
     code = models.CharField(max_length=24, help_text="Short, meaningful ID for the site. Assigned by the admin")
-    modern_name = models.CharField(max_length=50, null=True, blank=True, help_text="Name used by modern peoples")
-    ancient_name = models.CharField(max_length=50, null=True, blank=True, help_text="Name used by ancient peoples")
+    modern_name = models.CharField(max_length=50, blank=True, help_text="Name used by modern peoples")
+    ancient_name = models.CharField(max_length=50, blank=True, help_text="Name used by ancient peoples")
     coordinates = PointField()
-    area = models.FloatField(null=True, blank=True, help_text="Area in Hectares")
-    survey_type = models.CharField(default="", choices=SURVEY_CHOICES)
-    notes = models.TextField(default="")
+    area = models.FloatField(null=True, blank=True, help_text="Area in Hectares. Null is 'unknown'")
+    survey_type = models.CharField(blank=True, default="", choices=SURVEY_CHOICES, max_length=25)
+    notes = models.TextField(blank=True, default="")
     notes_easting_northing = models.TextField(
-        help_text="The original coordinate system of record. "
-                  "This value has been projected into lat/lon,"
-                  " and should not be used directly.")
-    region = models.ForeignKey(Region, null=True, blank=True)
+        blank=True, default='',
+        help_text="value of the original coordinate system of record, if it was easting/northing. Do not use directly"
+    )
+    region = models.ForeignKey(Region, null=True)
     references = models.ManyToManyField('bibliography.Publication')
-    features = models.ForeignKey('Feature', through='SiteFeature')
+    features = models.ManyToManyField('Feature', through='SiteFeature')
 
 
 class Feature(models.Model):
@@ -61,12 +61,10 @@ class Feature(models.Model):
         (CEMETARY, 'Cemetary'),
     ]
 
-    shortname = models.CharField(max_length=10, unique=True)  # e.g. EBIV
+    shortname = models.CharField(max_length=10, unique=True)
     name = models.CharField(max_length=50)
     description = models.TextField(default='')
-    sites = models.ManyToManyField(
-        Site, related_name='tags', through='SiteFeatureTag'
-    )
+    sites = models.ManyToManyField('Site', related_name='tags', through='SiteFeature')
 
 
 class SiteFeature(models.Model):
@@ -75,15 +73,23 @@ class SiteFeature(models.Model):
     tag is valid.
     """
     class Meta:
-        unique_together = ('site', 'tag')
+        unique_together = ('site', 'feature')
 
     site = models.ForeignKey('Site')
-    feature = models.ForeignKey('Tag')
+    feature = models.ForeignKey('Feature')
     evidence = models.IntegerField(
-        null=True, blank=True, choices=Evidence.CHOICES, max_length=24,
-        help_text="How clear is the evidence for the site to have this tag?"
+        default=Evidence.TYPICAL, choices=Evidence.CHOICES,
+        help_text="How clear is the evidence for the site to have this feature?"
     )
     periods = models.ManyToManyField('Period')
+
+
+class SitePeriod(models.Model):
+    """
+    Vanilla through-model
+    """
+    site = models.ForeignKey('Site')
+    period = models.ForeignKey('Period')
 
 
 class Period(models.Model):
@@ -95,18 +101,13 @@ class Period(models.Model):
     When attached to a Feature, indicates presence of that feature during
     that time
     """
-    shortname = models.CharField(max_length=10, unique=True)  # e.g. EBIV
     name = models.CharField(max_length=50)
+    shortname = models.CharField(max_length=10, unique=True, help_text="Unique code name, e.g. 'EBIV'")
     description = models.TextField(default='')
-    sites = models.ManyToManyField(
-        Site, related_name='occupation', through='SitePeriod'
-    )
-    start = models.IntegerField(
-        help_text="Approximate Beginning (BCE is negative)")
-    end = models.IntegerField(
-        help_text="Approximate Ending (BCE is negative)")
+    start = models.IntegerField(help_text="Approximate Beginning (BCE is negative)")
+    end = models.IntegerField(help_text="Approximate Ending (BCE is negative)")
 
-    parent = models.ForeignKey("self")
+    sites = models.ManyToManyField(Site, related_name='occupation_periods', through='SitePeriod')
 
     def __str__(self):
         return self.shortname

@@ -1,40 +1,42 @@
 from django.contrib import admin
-from .models import Site, Region, Period, Citation, Tag
+from .models import Site, Region, Period, SiteFeature, Feature
 
 
-class CitationInline(admin.TabularInline):
-    model = Citation
+class SiteFeatureInline(admin.TabularInline):
+    model = SiteFeature
 
 
 class SiteAdmin(admin.ModelAdmin):
+    list_display = ('code', 'modern_name', 'region')
     inlines = [
-        CitationInline
+        SiteFeatureInline,
     ]
-
-
-class TagAdmin(admin.ModelAdmin):
-    """
-    An admin for name/description-style stuff
-    """
-    list_display = ('shortname', 'name', 'description')
 
 
 class RegionAdmin(admin.ModelAdmin):
     """
-    Admin allowing sites to be populated in a region
+    View/edit which sites are in a given region.
+    """
+    list_display = ('name', 'description')
+
+
+class FeatureAdmin(admin.ModelAdmin):
+    """
+    Features such as "Tel" or "Fortress" or "Walls"
     """
 
 
-class PeriodAdmin(TagAdmin):
+class PeriodAdmin(admin.ModelAdmin):
     """
     Admin to display period information
     """
-    list_display = TagAdmin.list_display + ('start', 'end')
+    list_display = ('shortname', 'start', 'end',  'name', 'description', )
     list_editable = ('start', 'end')
 
-admin.site.register(Site, SiteAdmin)
+
 admin.site.register(Region, RegionAdmin)
-admin.site.register(Tag, TagAdmin)
 admin.site.register(Period, PeriodAdmin)
+admin.site.register(Site, SiteAdmin)
+admin.site.register(Feature, FeatureAdmin)
 
 # Register your models here.
