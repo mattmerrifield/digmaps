@@ -36,7 +36,7 @@ class Site(models.Model):
         blank=True, default='',
         help_text="value of the original coordinate system of record, if it was easting/northing. Do not use directly"
     )
-    region = models.ForeignKey(Region, null=True)
+    region = models.ForeignKey(Region, null=True, on_delete=models.SET_NULL)
     references = models.ManyToManyField('bibliography.Publication')
     features = models.ManyToManyField('Feature', through='SiteFeature')
 
@@ -75,8 +75,8 @@ class SiteFeature(models.Model):
     class Meta:
         unique_together = ('site', 'feature')
 
-    site = models.ForeignKey('Site')
-    feature = models.ForeignKey('Feature')
+    site = models.ForeignKey('Site', on_delete=models.CASCADE)
+    feature = models.ForeignKey('Feature', on_delete=models.CASCADE)
     evidence = models.IntegerField(
         default=Evidence.TYPICAL, choices=Evidence.CHOICES,
         help_text="How clear is the evidence for the site to have this feature?"
@@ -88,8 +88,8 @@ class SitePeriod(models.Model):
     """
     Vanilla through-model
     """
-    site = models.ForeignKey('Site')
-    period = models.ForeignKey('Period')
+    site = models.ForeignKey('Site', on_delete=models.CASCADE)
+    period = models.ForeignKey('Period', on_delete=models.CASCADE)
 
 
 class Period(models.Model):
