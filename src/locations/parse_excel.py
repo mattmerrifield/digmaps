@@ -2,7 +2,8 @@ import pandas as pd
 from django.db import transaction
 
 import bibliography.models
-from locations.models import Feature, SitePeriod, SiteFeature, Region, Site
+from locations.models import Feature, SitePeriod, SiteFeature, Region, Site, Period
+from django.contrib.gis.geos import Point
 
 
 def period_choices():
@@ -29,19 +30,23 @@ def period_choices():
         "Late Bronze I":                        ("LB-I", -1400, -1300),
         "Late Bronze II":                       ("LB-II", -1400, -1300),
         "Late Bronze III":                      ('LB-III', -1300, -1400),
-        "Later Uncategorized":                  ("Later", -14000, 0),
     }
     choices = {}
     for desc, (short, start, end) in period_names.items():
-        t, _ = Period.objects.get_or_create(
-            shortname=short,
-            defaults={
-                'description': desc,
-                'start': start,
-                'end': end,
-            })
+        t = period(short, desc, start, end)
         choices[desc] = t
     return choices
+
+
+def period(short, desc='', start=0, end=0):
+    t, _ = Period.objects.get_or_create(
+        shortname=short,
+        defaults={
+            'description': desc,
+            'start': start,
+            'end': end,
+        })
+    return t
 
 
 class SiteRecord(object):
@@ -63,7 +68,8 @@ class SiteRecord(object):
         # settlement evidence during the late bronze. Sites with only a single tag are also assumed to be occupied in
         # the late bronze onward, unless explicitly tagged as "single period"
         if len(tags) == 1 and self.row['Site Type'] != 'Single Period':
-            tags.append(self.period_choices['Later Uncategorized'])
+            t = period("Later", "Later",  -14000, 0)
+            tags.append(t)
         return tags
 
     def features(self):
@@ -99,16 +105,19 @@ class SiteRecord(object):
         Take a row of data off of the excel sheet
         """
         with transaction.atomic():
+            region = self.region()
             site, _ = Site.objects.get_or_create(
-                coordinates=(self.row.get('Easting-Lon'), self.row.get('Northing-Lat')),
+                code=self.row['Site ID'],
+                population=self.row['PopulationEstimate'],
+                coordinates=Point(self.row.get('Easting-Lon'), self.row.get('Northing-Lat')),
                 modern_name=self.row['Modern Name'],
                 ancient_name=self.row['Ancient Name'],
                 area=self.row['SiteSize'],
                 notes=self.row['Notes'],
                 notes_easting_northing="Original Coordinates: {Easting}/{Northing}".format(**self.row),
-                region=self.region(),
-                references=self.references(),
+                region=region,
             )
+            site.save()
             for period in self.periods():
                 SitePeriod.objects.get_or_create(
                     site=site,
@@ -121,15 +130,36 @@ class SiteRecord(object):
                 )
 
             for ref in self.references():
-
                 site.references.add(ref)
         return site
+
+
+def marker():
+    i = 0
+    while True:
+        i += 1
+        if i % 100 == 0:
+            yield "\n" + str(i)
+        elif i % 10:
+            yield "."
+        else:
+            yield ""
 
 
 def parse_workbook(file_name):
     xls = pd.ExcelFile(file_name)
     df = xls.parse(xls.sheet_names[0])
-    return df.to_dict()
+    return df.T.to_dict().values()
+
+
+def import_workbook(file_name):
+    rows = parse_workbook(file_name)
+    m = marker()
+    for r in rows:
+        print(next(m), end="")
+        sr = SiteRecord(r)
+        sr.site()
+
 
 
 

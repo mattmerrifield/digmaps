@@ -25,11 +25,12 @@ class Site(models.Model):
         ('excavation', 'Excavation'),
     )
 
-    code = models.CharField(max_length=24, help_text="Short, meaningful ID for the site. Assigned by the admin")
+    code = models.CharField(max_length=40, help_text="Short, meaningful ID for the site. Assigned by the admin")
     modern_name = models.CharField(max_length=50, blank=True, help_text="Name used by modern peoples")
     ancient_name = models.CharField(max_length=50, blank=True, help_text="Name used by ancient peoples")
     coordinates = PointField()
     area = models.FloatField(null=True, blank=True, help_text="Area in Hectares. Null is 'unknown'")
+    population = models.FloatField(null=True, blank=True)
     survey_type = models.CharField(blank=True, default="", choices=SURVEY_CHOICES, max_length=25)
     notes = models.TextField(blank=True, default="")
     notes_easting_northing = models.TextField(
@@ -61,7 +62,7 @@ class Feature(models.Model):
         (CEMETARY, 'Cemetary'),
     ]
 
-    shortname = models.CharField(max_length=10, unique=True)
+    shortname = models.CharField(max_length=200, unique=True)
     name = models.CharField(max_length=50)
     description = models.TextField(default='')
     sites = models.ManyToManyField('Site', related_name='tags', through='SiteFeature')
