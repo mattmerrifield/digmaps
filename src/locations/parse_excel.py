@@ -140,7 +140,7 @@ def marker():
         i += 1
         if i % 100 == 0:
             yield "\n" + str(i)
-        elif i % 10:
+        elif i % 10 == 0:
             yield "."
         else:
             yield ""
