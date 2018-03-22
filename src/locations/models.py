@@ -65,7 +65,28 @@ class Feature(models.Model):
     shortname = models.CharField(max_length=200, unique=True)
     name = models.CharField(max_length=50)
     description = models.TextField(default='')
-    sites = models.ManyToManyField('Site', related_name='tags', through='SiteFeature')
+    sites = models.ManyToManyField('Site', related_name='features', through='SiteFeature')
+
+
+class Period(models.Model):
+    """
+    An archaeological period, e.g. "Early Bronze Age"
+
+    When attached to a Site, indicates occupation of that site during that time
+
+    When attached to a Feature, indicates presence of that feature during
+    that time
+    """
+    name = models.CharField(max_length=50)
+    shortname = models.CharField(max_length=10, unique=True, help_text="Unique code name, e.g. 'EBIV'")
+    description = models.TextField(default='')
+    start = models.IntegerField(help_text="Approximate Beginning (BCE is negative)")
+    end = models.IntegerField(help_text="Approximate Ending (BCE is negative)")
+
+    sites = models.ManyToManyField(Site, related_name='periods', through='SitePeriod')
+
+    def __str__(self):
+        return self.shortname
 
 
 class SiteFeature(models.Model):
@@ -93,23 +114,4 @@ class SitePeriod(models.Model):
     period = models.ForeignKey('Period', on_delete=models.CASCADE)
 
 
-class Period(models.Model):
-    """
-    An archaeological period, e.g. "Early Bronze Age"
-
-    When attached to a Site, indicates occupation of that site during that time
-
-    When attached to a Feature, indicates presence of that feature during
-    that time
-    """
-    name = models.CharField(max_length=50)
-    shortname = models.CharField(max_length=10, unique=True, help_text="Unique code name, e.g. 'EBIV'")
-    description = models.TextField(default='')
-    start = models.IntegerField(help_text="Approximate Beginning (BCE is negative)")
-    end = models.IntegerField(help_text="Approximate Ending (BCE is negative)")
-
-    sites = models.ManyToManyField(Site, related_name='occupation_periods', through='SitePeriod')
-
-    def __str__(self):
-        return self.shortname
 
