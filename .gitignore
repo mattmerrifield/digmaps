@@ -96,3 +96,7 @@ db/data
 .idea/*
 .DS_Store
 Untitled.ipynb
+
+# Elm build artifacts
+elm/elm-stuff/*
+elm/elm-package.json

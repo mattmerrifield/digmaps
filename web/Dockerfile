@@ -1,4 +1,5 @@
-# Serve out the front-end code. Automatically recompile stuff
-FROM emmanuelrosa/elm-base:0.18.0
-WORKDIR /code
-CMD ["elm-reactor", "--address=0.0.0.0", "--port=8002"]
+FROM nginx
+# To bake the image, uncomment these and remove the volumes declaration from
+# docker-compose.yml
+#COPY static /usr/share/nginx/html
+#COPY conf/nginx.conf /etc/nginx/nginx.conf

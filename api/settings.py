@@ -25,7 +25,9 @@ SECRET_KEY = 'h$vz!pr*kg&z&oepx*c8=w#smuy+wl=&j$w5vz*@f+==9!3zun'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'api.digmaps.local'
+ ]
 
 
 # Application definition
