@@ -45,7 +45,7 @@ class RegionViewSet(LocationModelViewSet):
 # The four main resources are available at top-level simple URLs, for GET/POST/PATCH/PUT/DELETE etc.
 router = routers.DefaultRouter(trailing_slash=True)
 router.register(r'sites', SiteViewSet)
-router.register(r'feature', FeatureViewSet)
+router.register(r'features', FeatureViewSet)
 router.register(r'periods', PeriodViewSet)
 router.register(r'regions', RegionViewSet)
 

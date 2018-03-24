@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'locations',
     'bibliography',
     'django_pdb',
+    'rest_framework',
+    'rest_framework_gis',
 ]
 
 MIDDLEWARE = [
