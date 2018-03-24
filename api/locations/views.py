@@ -22,7 +22,7 @@ class FeatureViewSet(LocationModelViewSet):
     """
     Supports standard actions: Retrieve, List, Create, Update (PUT), Partial Update (PATCH).
     """
-    queryset = models.Site.objects.all()
+    queryset = models.Feature.objects.all()
     serializer_class = serializers.FeatureSerializer
 
 
@@ -30,7 +30,7 @@ class PeriodViewSet(LocationModelViewSet):
     """
     Supports standard actions: Retrieve, List, Create, Update (PUT), Partial Update (PATCH).
     """
-    queryset = models.Site.objects.all()
+    queryset = models.Period.objects.all()
     serializer_class = serializers.PeriodSerializer
 
 
@@ -38,7 +38,7 @@ class RegionViewSet(LocationModelViewSet):
     """
     Supports standard actions: Retrieve, List, Create, Update (PUT), Partial Update (PATCH)
     """
-    queryset = models.Site.objects.all()
+    queryset = models.Region.objects.all()
     serializer_class = serializers.RegionSerializer
 
 
