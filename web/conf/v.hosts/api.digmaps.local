@@ -1,8 +1,0 @@
-server {
-    listen 80;
-    server_name api.digmaps.local;
-
-    location / {
-        proxy_pass http://api:8080;
-        }
-    }
