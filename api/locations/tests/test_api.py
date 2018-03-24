@@ -34,20 +34,18 @@ class APITestCase(test.APITestCase):
         super(APITestCase, self).setUp()
         self.assertEqual(2, self.model.objects.count())
 
-    ######
-    # Simple operations
+    def test_retrieve(self):
+        """
+        You may request a specific region by its ID
+        """
+        response = self.client.get('/{}/{}/'.format(self.endpoint, self.object_1.id))
+        self.assertEqual(200, response.status_code)
+
     def test_list(self):
         """
         A plain GET To the regions endpoint returns a paginated list of regions
         """
         response = self.client.get('/{}/'.format(self.endpoint))
-        self.assertEqual(200, response.status_code)
-
-    def test_get(self):
-        """
-        You may request a specific region by its ID
-        """
-        response = self.client.get('/{}/{}/'.format(self.endpoint, self.object_1.id))
         self.assertEqual(200, response.status_code)
 
     def test_create(self):
