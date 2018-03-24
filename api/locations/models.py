@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.gis.db.models import PointField
-from digmaps.constants import Evidence
+from locations.constants import Evidence
 
 
 class Region(models.Model):

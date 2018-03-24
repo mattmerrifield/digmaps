@@ -19,5 +19,5 @@ from locations.views import router as location_router
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^api/v1/', include(location_router.urls))
+    url(r'^', include(location_router.urls))
 ]

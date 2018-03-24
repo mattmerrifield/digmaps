@@ -1,3 +1,4 @@
+#!/bin/bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-$DIR/compose run app ./manage.py $@
+$DIR/compose run api ./manage.py $@
 

@@ -9,7 +9,13 @@ RUN apt-get update && apt-get install -y \
     gdal-bin \
     postgresql-server-dev-all
 
-# Pip last, since these things change so frequently
-COPY requirements.txt ./
+# Gotta stuff the code somewhere and make it visible to python
+WORKDIR /code
+COPY . /code
+ENV PYTHONPATH $PYTHONPATH:/code
+
+# Pip last, since these things change so frequently, we'll rebuild them almost
+# every time
 RUN pip install --no-cache-dir -r requirements.txt
+CMD ["python3", "./digmaps/manage.py", "runserver", "0.0.0.0:8080"]
 

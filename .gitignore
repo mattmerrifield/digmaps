@@ -89,9 +89,10 @@ ENV/
 .ropeproject
 
 # Docker initialization
-docker/data
+db/data
 
 # Excel data
 *.xlsx
 .idea/*
 .DS_Store
+Untitled.ipynb
