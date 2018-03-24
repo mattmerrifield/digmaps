@@ -1,6 +1,0 @@
-if [[ "$1" != "" ]]; then
-    CONTAINER="$1"
-else
-    CONTAINER=app
-fi
-docker exec -i -t $CONTAINER bash
