@@ -17,5 +17,5 @@ ENV PYTHONPATH $PYTHONPATH:/code
 # Pip last, since these things change so frequently, we'll rebuild them almost
 # every time
 RUN pip install --no-cache-dir -r requirements.txt
-CMD ["python3", "./digmaps/manage.py", "runserver", "0.0.0.0:8080"]
+CMD ["python3", "manage.py", "runserver", "0.0.0.0:8080"]
 

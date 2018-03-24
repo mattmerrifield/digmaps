@@ -7,7 +7,7 @@ services:
 
   migrate:
     build: "./api"
-    command: "python3 ./digmaps/manage.py migrate"
+    command: "python3 manage.py migrate"
     depends_on:
       - db
 
@@ -16,7 +16,6 @@ services:
     ports:
       - "8080:8080"   # Main application port
       - "8000:8000"   # Secondary debugging port (nothing runs here by default)
-    working_dir: /code
     volumes:
       - ./api:/code
     depends_on:
@@ -27,7 +26,6 @@ services:
     build: "./web"
     ports:
       - "8001:8001"
-    working_dir: /code
     volumes:
       - ./web:/code
     depends_on:
@@ -38,10 +36,9 @@ services:
     build: "./api"
     ports:
       - "8888:8888"
-    working_dir: /code
     volumes:
       - .:/code
-    command: "python3 ./manage.py shell_plus --notebook"
+    command: "python3 api/manage.py shell_plus --notebook"
     depends_on:
       - db
       - api
