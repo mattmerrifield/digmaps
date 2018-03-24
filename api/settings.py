@@ -26,7 +26,7 @@ SECRET_KEY = 'h$vz!pr*kg&z&oepx*c8=w#smuy+wl=&j$w5vz*@f+==9!3zun'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'api.digmaps.local'
+    'api'
  ]
 
 
@@ -134,6 +134,6 @@ STATIC_URL = '/static/'
 
 NOTEBOOK_ARGUMENTS = [
     '--ip', '0.0.0.0',
-    '--port', '8888',
+    '--port', '80',
     '--allow-root',
 ]
