@@ -8,7 +8,7 @@ services:
       - "./db/data:/docker-entrypoint-initdb.d/"
 
   migrate:
-    # One-shot service to
+    # One-shot service to run DB migrations before we start the API service
     build: "./api"
     command: "python3 manage.py migrate"
     volumes:
@@ -50,7 +50,7 @@ services:
     depends_on:
       - api
 
-  web:
+  www:
     build: "./web"
     ports:
       - "80"  # Only directly to other containers; exposed by nginx
