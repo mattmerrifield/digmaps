@@ -39,7 +39,8 @@ class Site(models.Model):
     )
     region = models.ForeignKey(Region, null=True, on_delete=models.SET_NULL)
     references = models.ManyToManyField('bibliography.Publication')
-    features = models.ManyToManyField('Feature', through='SiteFeature')
+    features = models.ManyToManyField('Feature', related_name='sites', through='SiteFeature')
+    periods = models.ManyToManyField('Period', related_name='sites', through='SitePeriod')
 
 
 class Feature(models.Model):
@@ -65,7 +66,6 @@ class Feature(models.Model):
     shortname = models.CharField(max_length=200, unique=True)
     name = models.CharField(max_length=50)
     description = models.TextField(default='')
-    sites = models.ManyToManyField('Site', related_name='features', through='SiteFeature')
 
 
 class Period(models.Model):
@@ -82,8 +82,6 @@ class Period(models.Model):
     description = models.TextField(default='')
     start = models.IntegerField(help_text="Approximate Beginning (BCE is negative)")
     end = models.IntegerField(help_text="Approximate Ending (BCE is negative)")
-
-    sites = models.ManyToManyField(Site, related_name='periods', through='SitePeriod')
 
     def __str__(self):
         return self.shortname

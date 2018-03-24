@@ -26,6 +26,15 @@ class PeriodSerializer(serializers.ModelSerializer):
         )
 
 
+class RegionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Region
+        fields = (
+            'name',
+            'description',
+        )
+
+
 class SiteSerializer(serializers.ModelSerializer):
     features = FeatureSerializer(many=True)
     periods = PeriodSerializer(many=True)
@@ -48,3 +57,5 @@ class SiteSerializer(serializers.ModelSerializer):
             'references',
             'features',
         )
+
+

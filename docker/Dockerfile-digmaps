@@ -1,5 +1,5 @@
 # onbuild docker image automatically runs pip install on requirements.txt
-FROM python:3-onbuild
+FROM python:3
 
 # Additional utilities
 RUN apt-get update && apt-get install -y \
@@ -9,4 +9,7 @@ RUN apt-get update && apt-get install -y \
     gdal-bin \
     postgresql-server-dev-all
 
+# Pip last, since these things change so frequently
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 

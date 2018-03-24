@@ -6,5 +6,6 @@ pandas
 ipython
 jupyter
 django-extensions
-drf-extensions
 xlrd
+django-pdb
+ipdb

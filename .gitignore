@@ -93,3 +93,5 @@ docker/data
 
 # Excel data
 *.xlsx
+.idea/*
+.DS_Store
