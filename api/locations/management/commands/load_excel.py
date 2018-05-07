@@ -82,7 +82,7 @@ class SiteRecord(object):
         """
         Some fields' contents should just get stored as feature tags. We'll sort the deets out later.
         """
-        fields = 'Region GeologicType SiteType SiteFunction BurialType'.split()
+        fields = 'GeologicType SiteType SiteFunction BurialType'.split()
         for field_name in fields:
             value = self.row[field_name]
             if value and str(value) not in ["nan", 'Unknown']:
@@ -105,7 +105,7 @@ class SiteRecord(object):
 
     def region(self):
         region, _ = Region.objects.get_or_create(
-            name=self.row['Region'],
+            name=self.row['Region'] or "Unspecified",
         )
         return region
 
