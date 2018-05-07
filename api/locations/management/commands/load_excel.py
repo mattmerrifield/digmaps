@@ -81,7 +81,7 @@ class SiteRecord(object):
         fields = 'Region GeologicType SiteType SiteFunction BurialType'.split()
         for field_name in fields:
             value = self.row[field_name]
-            if value:
+            if value and value not in ["nan", 'Unknown']:
                 f, _ = Feature.objects.get_or_create(
                     shortname=value,
                     defaults={
