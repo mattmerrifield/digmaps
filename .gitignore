@@ -101,7 +101,7 @@ db/data
 .DS_Store
 
 # Jupyter scratch notebook
-Untitled.ipynb
+Untitled*.ipynb
 
 # Elm build artifacts
 elm/elm-stuff/*

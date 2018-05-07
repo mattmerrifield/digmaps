@@ -30,7 +30,7 @@ services:
   jupyter:
     build: "./api"   # Same Dockerfile as api so we've got access to django models
     ports:
-      - "80"
+      - "8888:8888"
     volumes:
       - .:/code
     command: "python3 api/manage.py shell_plus --notebook"
@@ -40,8 +40,6 @@ services:
 
   elm:
     build: "./elm"
-    ports:
-      - "80"
     volumes:
       - ./web:/code
     depends_on:

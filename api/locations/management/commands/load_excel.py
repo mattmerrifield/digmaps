@@ -115,7 +115,7 @@ class SiteRecord(object):
                 code=self.row['Site ID'],
                 defaults=dict(
                     population=self.row['PopulationEstimate'],
-                    coordinates=Point(self.row.get('Easting-Lon'), self.row.get('Northing-Lat')),
+                    coordinates=Point(self.row['Easting-Long'], self.row['Northing-Lat']),
                     modern_name=self.row['Modern Name'],
                     ancient_name=self.row['Ancient Name'],
                     area=self.row['SiteSize'],
