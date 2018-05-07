@@ -30,7 +30,7 @@ services:
   jupyter:
     build: "./api"   # Same Dockerfile as api so we've got access to django models
     ports:
-      - "8888:8888"
+      - "8888:8888"  # Expose directly. Websockets do not play nicely with nginx proxy_pass
     volumes:
       - .:/code
     command: "python3 api/manage.py shell_plus --notebook"
