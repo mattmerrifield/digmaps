@@ -50,7 +50,7 @@ services:
   www:
     build: "./web"
     ports:
-      - "80"
+      - "80:80"
     volumes:
       - ./web/static:/usr/share/nginx/html
       - ./web/conf:/etc/nginx
