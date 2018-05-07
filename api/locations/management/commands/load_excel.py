@@ -1,3 +1,5 @@
+import os
+
 from django.core.management.base import BaseCommand
 
 import pandas as pd
@@ -53,7 +55,9 @@ def period(short, desc='', start=0, end=0):
 
 class SiteRecord(object):
     def __init__(self, row):
-        self.row = row
+        # Purge 'nan' -- it's a "valid" value as far as PostgreSQL is concerned, but it causes problems with the
+        # rest of the system. Use plain "none" instead.
+        self.row = {k: v if not pd.isnull(v) else None for k, v in row.items()}
         self.period_choices = period_choices()
 
     def periods(self):
@@ -69,7 +73,7 @@ class SiteRecord(object):
         # But there's a default catch-all "Later" period, since we didn't bother explicitly tagging things that had
         # settlement evidence during the late bronze. Sites with only a single tag are also assumed to be occupied in
         # the late bronze onward, unless explicitly tagged as "single period"
-        if len(tags) == 1 and self.row['Site Type'] != 'Single Period':
+        if len(tags) == 1 and self.row['SiteType'] != 'Single Period':
             t = period("Later", "Later",  -14000, 0)
             tags.append(t)
         return tags
@@ -81,7 +85,7 @@ class SiteRecord(object):
         fields = 'Region GeologicType SiteType SiteFunction BurialType'.split()
         for field_name in fields:
             value = self.row[field_name]
-            if value and value not in ["nan", 'Unknown']:
+            if value and str(value) not in ["nan", 'Unknown']:
                 f, _ = Feature.objects.get_or_create(
                     shortname=value,
                     defaults={
@@ -116,10 +120,10 @@ class SiteRecord(object):
                 defaults=dict(
                     population=self.row['PopulationEstimate'],
                     coordinates=Point(self.row['Easting-Long'], self.row['Northing-Lat']),
-                    modern_name=self.row['Modern Name'],
-                    ancient_name=self.row['Ancient Name'],
+                    modern_name=self.row['Modern Name'] or "",
+                    ancient_name=self.row['Ancient Name'] or "",
                     area=self.row['SiteSize'],
-                    notes=self.row['Notes'],
+                    notes=self.row['Notes'] or "",
                     notes_easting_northing="Original Coordinates: {Easting}/{Northing}".format(**self.row),
                     region=region,
                 )
@@ -174,7 +178,13 @@ class Command(BaseCommand):
     """
 
     def add_arguments(self, parser):
-        parser.add_argument('file', type=str)
+        parser.add_argument('file', type=str, nargs="?", default="")
 
     def handle(self, *args, **options):
-        import_workbook(options['file'])
+        if options.get('file'):
+            import_workbook(options['file'])
+        else:
+            locations_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+            data_dir = os.path.join(locations_dir, 'data')
+            for f in os.listdir(data_dir):
+                import_workbook(os.path.join(data_dir, f))

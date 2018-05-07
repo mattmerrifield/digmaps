@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from locations import models
 
 
-class PointField(serializers.Field):
+class PointFieldSerializer(serializers.Field):
     """
     A field for handling GeoDjango Point fields as a json format.
     Expected input format:
@@ -44,8 +44,8 @@ class PointField(serializers.Field):
                 latitude = value.get("latitude")
                 longitude = value.get("longitude")
                 return GEOSGeometry('POINT(%(longitude)s %(latitude)s)' % {
-                    "longitude": longitude,
-                    "latitude": latitude}
+                    "longitude": longitude or None,
+                    "latitude": latitude or None}
                 )
             except (GEOSException, ValueError):
                 self.fail('invalid')
@@ -64,6 +64,7 @@ class PointField(serializers.Field):
                 "longitude": smart_str(value.x)
             }
         return value
+
 
 class NestableModelSerializer(serializers.ModelSerializer):
     
@@ -114,6 +115,33 @@ class PeriodSerializer(NestableModelSerializer):
         )
 
 
+class PeriodSummarySerializer(NestableModelSerializer):
+    class Meta:
+        model = models.Period
+        fields = (
+            'id',
+            'shortname',
+        )
+
+
+class FeatureSummarySerializer(NestableModelSerializer):
+    class Meta:
+        model = models.Feature
+        fields = (
+            'id',
+            'shortname',
+        )
+
+
+class RegionSummarySerializer(NestableModelSerializer):
+    class Meta:
+        model = models.Region
+        fields = (
+            'id',
+            'shortname',
+        )
+
+
 class RegionSerializer(NestableModelSerializer):
     class Meta:
         model = models.Region
@@ -124,9 +152,9 @@ class RegionSerializer(NestableModelSerializer):
 
 
 class SiteSerializer(NestableModelSerializer):
-    features = FeatureSerializer(many=True, required=False, read_only=True)
-    periods = PeriodSerializer(many=True, required=False, read_only=True)
-    coordinates = PointField()
+    features = FeatureSummarySerializer(many=True, required=False, read_only=True)
+    periods = PeriodSummarySerializer(many=True, required=False, read_only=True)
+    coordinates = PointFieldSerializer()
 
     class Meta:
         model = models.Site

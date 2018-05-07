@@ -138,3 +138,8 @@ NOTEBOOK_ARGUMENTS = [
     '--port', '8888',
     '--allow-root',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10
+}
