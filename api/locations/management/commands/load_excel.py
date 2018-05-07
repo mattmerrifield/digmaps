@@ -1,3 +1,5 @@
+from django.core.management.base import BaseCommand
+
 import pandas as pd
 from django.db import transaction
 
@@ -166,5 +168,13 @@ def import_workbook(file_name):
         sr.site()
 
 
+class Command(BaseCommand):
+    """
+    Import the given excel file to the database
+    """
 
+    def add_arguments(self, parser):
+        parser.add_argument('file', type=str)
 
+    def handle(self, *args, **options):
+        import_workbook(options['file'])
