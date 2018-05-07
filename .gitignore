@@ -93,8 +93,14 @@ db/data
 
 # Excel data
 *.xlsx
+
+# Jetbrains configuration
 .idea/*
+
+# Mac stuff
 .DS_Store
+
+# Jupyter scratch notebook
 Untitled.ipynb
 
 # Elm build artifacts
