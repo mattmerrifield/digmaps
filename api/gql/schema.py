@@ -1,7 +1,8 @@
 from graphene_django import DjangoObjectType
 import graphene
-from api.locations import models as locations
-from api.bibliography import models as bibliography
+import graphql_geojson
+from locations import models as locations
+from bibliography import models as bibliography
 
 
 class Region(DjangoObjectType):
@@ -9,9 +10,10 @@ class Region(DjangoObjectType):
         model = locations.Region
 
 
-class Site(DjangoObjectType):
+class Site(graphql_geojson.GeoJSONType):
     class Meta:
         model = locations.Site
+        geojson_field = 'coordinates'
 
 
 class Feature(DjangoObjectType):

@@ -54,7 +54,7 @@ INSTALLED_APPS = [
 ]
 
 GRAPHENE = {
-    'SCHEMA': 'api.gql.schema'   # Where your Graphene gql lives
+    'SCHEMA': 'gql.schema.schema'   # Where your Graphene gql lives
 }
 
 MIDDLEWARE = [
