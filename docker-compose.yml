@@ -1,23 +1,22 @@
-version: '3'
+version: '2'
 services:
   db:
+    container_name: db
     build: "./db"
-    ports:
-      - "5432:5432"  # Exposed outside dockerland so we can connect a workbench
     volumes:
       - "./db/data:/docker-entrypoint-initdb.d/"   # SQL files here get executed when the container first starts
 
   api:
+    container_name: api
     build: "./api"
-    ports:
-      - "80"          # Main application port
-      - "8000:8000"   # Secondary debugging port exposed outside dockerland
     volumes:
       - ./api:/code
+    command: "python3 manage.py runserver 0.0.0.0:8000"
     depends_on:
       - db
 
   jupyter:
+    container_name: jupyter
     build: "./api"   # Same Dockerfile as api so we've got access to django models
     ports:
       - "8888:8888"  # Expose directly. Websockets do not play nicely with nginx proxy_pass
@@ -26,9 +25,9 @@ services:
     command: "python3 api/manage.py shell_plus --notebook"
     depends_on:
       - db
-      - api
 
   elm:
+    container_name: elm
     build: "./elm"
     volumes:
       - ./web:/code
@@ -36,14 +35,13 @@ services:
       - api
 
   www:
+    container_name: www
     build: "./web"
     ports:
       - "80:80"
     volumes:
       - ./web/static:/usr/share/nginx/html
       - ./web/conf:/etc/nginx
-
-
 
 
 

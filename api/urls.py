@@ -16,8 +16,11 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from locations.views import router as location_router
+from django.conf.urls import url
+from graphene_django.views import GraphQLView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^', include(location_router.urls))
+    url(r'^', include(location_router.urls)),
+    url(r'^gql', GraphQLView.as_view(graphiql=True)),
 ]

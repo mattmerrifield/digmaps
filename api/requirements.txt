@@ -10,3 +10,6 @@ xlrd
 django-pdb
 ipdb
 djangorestframework-gis
+graphql-core>=2.0.dev
+graphene-django
+django-graphql-geojson

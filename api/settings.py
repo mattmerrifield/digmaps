@@ -48,7 +48,14 @@ INSTALLED_APPS = [
     'django_pdb',
     'rest_framework',
     'rest_framework_gis',
+    'graphene_django',
+    'gql',
+
 ]
+
+GRAPHENE = {
+    'SCHEMA': 'api.gql.schema'   # Where your Graphene gql lives
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -139,6 +146,7 @@ NOTEBOOK_ARGUMENTS = [
     '--port', '8888',
     '--allow-root',
 ]
+
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',

@@ -7,12 +7,14 @@ RUN apt-get update && apt-get install -y \
     binutils \
     libproj-dev \
     gdal-bin \
-    postgresql-server-dev-all
+    postgresql-server-dev-all \
+    nmap
 
 # Gotta stuff the code somewhere and make it visible to python
 WORKDIR /code
 COPY . /code
 ENV PYTHONPATH $PYTHONPATH:/code
+EXPOSE 80
 
 # Pip last, since these things change so frequently, we'll rebuild them almost
 # every time
