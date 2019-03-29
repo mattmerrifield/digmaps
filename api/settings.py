@@ -28,6 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'api.digmaps.test',
     'api',
+    'localhost',
  ]
 
 
@@ -86,9 +87,9 @@ WSGI_APPLICATION = 'wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': os.getenv('DB_NAME', 'digmaps'),
-        'USER': os.getenv('POSTGRES_USER', 'postgres'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', ""),
+        'NAME': os.getenv('DB_NAME', 'gis'),
+        'USER': os.getenv('POSTGRES_USER', 'docker'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', "docker"),
         'HOST': os.getenv("DB_HOST", "db"),
         'PORT': os.getenv("DB_PORT", '5432'),
     }
