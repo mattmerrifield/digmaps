@@ -1,0 +1,5 @@
+#!/usr/bin/sh
+
+freeze() {
+ docker-compose run api pip freeze > api/frozen_requirements.txt
+}
