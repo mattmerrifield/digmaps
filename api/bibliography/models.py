@@ -5,8 +5,9 @@ class Author(models.Model):
     """
     Somebody who gets credit for writing something interesting
     """
-    first_name = models.CharField(max_length=100, default='', blank=True)
-    last_name = models.CharField(max_length=100, default='', blank=True)
+
+    first_name = models.CharField(max_length=100, default="", blank=True)
+    last_name = models.CharField(max_length=100, default="", blank=True)
 
 
 class Publication(models.Model):
@@ -20,8 +21,12 @@ class Publication(models.Model):
 
     etc.
     """
+
     title = models.CharField(max_length=100)
-    citation_text = models.TextField(default='', help_text="Appropriately formatted citation string for this publication")
+    citation_text = models.TextField(
+        default="",
+        help_text="Appropriately formatted citation string for this publication",
+    )
     authors = models.ManyToManyField(Author)
 
     def __str__(self):

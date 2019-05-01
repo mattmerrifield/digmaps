@@ -5,14 +5,15 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('locations', '0004_site_population'),
-    ]
+    dependencies = [("locations", "0004_site_population")]
 
     operations = [
         migrations.AlterField(
-            model_name='site',
-            name='code',
-            field=models.CharField(help_text='Short, meaningful ID for the site. Assigned by the admin', max_length=40),
-        ),
+            model_name="site",
+            name="code",
+            field=models.CharField(
+                help_text="Short, meaningful ID for the site. Assigned by the admin",
+                max_length=40,
+            ),
+        )
     ]

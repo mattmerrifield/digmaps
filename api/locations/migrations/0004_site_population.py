@@ -5,14 +5,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('locations', '0003_auto_20180321_0854'),
-    ]
+    dependencies = [("locations", "0003_auto_20180321_0854")]
 
     operations = [
         migrations.AddField(
-            model_name='site',
-            name='population',
+            model_name="site",
+            name="population",
             field=models.FloatField(blank=True, null=True),
-        ),
+        )
     ]

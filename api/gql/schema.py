@@ -1,31 +1,6 @@
 from graphene_django import DjangoObjectType
-from graphene_django.converter import convert_django_field
 import graphene
 from locations import models as locations
-from bibliography import models as bibliography
-from django.contrib.gis.db.models import PointField
-
-
-class PointType(graphene.ObjectType):
-    """
-    Very simple GeoJSON representation for a PointField
-    """
-    type = graphene.String()
-    coordinates = graphene.List(graphene.Float)
-
-    def resolve_type(self, info):
-        """
-        A point is.... always a point. Duh.
-        """
-        return "point"
-
-    def resolve_coordinates(self, info):
-        return info.x, info.y
-
-
-@convert_django_field.register(PointField)
-def convert_point_field(field, registry=None):
-    return PointType()
 
 
 class Region(DjangoObjectType):
@@ -35,6 +10,7 @@ class Region(DjangoObjectType):
 
 class Site(DjangoObjectType):
     class Meta:
+        filter_fields = ["id", "region", "modern_name", "ancient_name", "population"]
         model = locations.Site
 
 

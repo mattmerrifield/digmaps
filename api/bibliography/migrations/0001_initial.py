@@ -9,25 +9,49 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Author',
+            name="Author",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('first_name', models.CharField(blank=True, default='', max_length=100)),
-                ('last_name', models.CharField(blank=True, default='', max_length=100)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "first_name",
+                    models.CharField(blank=True, default="", max_length=100),
+                ),
+                ("last_name", models.CharField(blank=True, default="", max_length=100)),
             ],
         ),
         migrations.CreateModel(
-            name='Publication',
+            name="Publication",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=100)),
-                ('citation_text', models.TextField(default='', help_text='Appropriately formatted citation string for this publication')),
-                ('authors', models.ManyToManyField(to='bibliography.Author')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=100)),
+                (
+                    "citation_text",
+                    models.TextField(
+                        default="",
+                        help_text="Appropriately formatted citation string for this publication",
+                    ),
+                ),
+                ("authors", models.ManyToManyField(to="bibliography.Author")),
             ],
         ),
     ]

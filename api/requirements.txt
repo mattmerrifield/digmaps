@@ -13,3 +13,4 @@ djangorestframework-gis
 graphql-core>=2.0.dev
 graphene-django
 django-graphql-geojson
+django-filter>=2

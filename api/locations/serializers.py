@@ -18,12 +18,11 @@ class PointFieldSerializer(serializers.Field):
          "longitude": 24.452545489
         }
     """
-    type_name = 'PointField'
-    type_label = 'point'
 
-    default_error_messages = {
-        'invalid': _('Enter a valid location.'),
-    }
+    type_name = "PointField"
+    type_label = "point"
+
+    default_error_messages = {"invalid": _("Enter a valid location.")}
 
     def to_internal_value(self, value):
         """
@@ -37,19 +36,19 @@ class PointFieldSerializer(serializers.Field):
                 value = value.replace("'", '"')
                 value = json.loads(value)
             except ValueError:
-                self.fail('invalid')
+                self.fail("invalid")
 
         if value and isinstance(value, dict):
             try:
                 latitude = value.get("latitude")
                 longitude = value.get("longitude")
-                return GEOSGeometry('POINT(%(longitude)s %(latitude)s)' % {
-                    "longitude": longitude or None,
-                    "latitude": latitude or None}
+                return GEOSGeometry(
+                    "POINT(%(longitude)s %(latitude)s)"
+                    % {"longitude": longitude or None, "latitude": latitude or None}
                 )
             except (GEOSException, ValueError):
-                self.fail('invalid')
-        self.fail('invalid')
+                self.fail("invalid")
+        self.fail("invalid")
 
     def to_representation(self, value):
         """
@@ -59,15 +58,11 @@ class PointFieldSerializer(serializers.Field):
             return value
 
         if isinstance(value, GEOSGeometry):
-            value = {
-                "latitude": smart_str(value.y),
-                "longitude": smart_str(value.x)
-            }
+            value = {"latitude": smart_str(value.y), "longitude": smart_str(value.x)}
         return value
 
 
 class NestableModelSerializer(serializers.ModelSerializer):
-    
     def to_internal_value(self, data):
         """
         We allow API users to pass in either a dictionary of data (like normal) or a single
@@ -81,74 +76,50 @@ class NestableModelSerializer(serializers.ModelSerializer):
             return data
         else:
             return super(NestableModelSerializer, self).to_internal_value(data)
-        
+
     def possible_pk(self, data):
         if isinstance(data, int):
             return data
-        elif isinstance(data, str) and all((i in '0123456789') for i in data):
+        elif isinstance(data, str) and all((i in "0123456789") for i in data):
             return int(data)
         else:
             return None
-                
+
 
 class FeatureSerializer(NestableModelSerializer):
     class Meta:
         model = models.Feature
-        fields = (
-            'id',
-            'shortname',
-            'name',
-            'description',
-        )
+        fields = ("id", "shortname", "name", "description")
 
 
 class PeriodSerializer(NestableModelSerializer):
     class Meta:
         model = models.Period
-        fields = (
-            'id',
-            'shortname',
-            'name',
-            'description',
-            'start',
-            'end',
-        )
+        fields = ("id", "shortname", "name", "description", "start", "end")
 
 
 class PeriodSummarySerializer(NestableModelSerializer):
     class Meta:
         model = models.Period
-        fields = (
-            'id',
-            'shortname',
-        )
+        fields = ("id", "shortname")
 
 
 class FeatureSummarySerializer(NestableModelSerializer):
     class Meta:
         model = models.Feature
-        fields = (
-            'id',
-            'shortname',
-        )
+        fields = ("id", "shortname")
 
 
 class RegionSummarySerializer(NestableModelSerializer):
     class Meta:
         model = models.Region
-        fields = (
-            'id',
-            'shortname',
-        )
+        fields = ("id", "shortname")
 
 
 class RegionSerializer(NestableModelSerializer):
     class Meta:
         model = models.Region
-        fields = (
-            'name',
-            'description',
-        )
+        fields = ("name", "description")
 
 
 class SiteSerializer(NestableModelSerializer):
@@ -160,23 +131,20 @@ class SiteSerializer(NestableModelSerializer):
         model = models.Site
         depth = 2
         fields = (
-            'id',
-            'code',
-            'modern_name',
-            'ancient_name',
-            'coordinates',
-            'area',
-            'population',
-            'survey_type',
-            'notes',
-            'notes_easting_northing',
-            'region',
-            'references',
-            'periods',
-            'features',
-            'periods',
-            'features',
+            "id",
+            "code",
+            "modern_name",
+            "ancient_name",
+            "coordinates",
+            "area",
+            "population",
+            "survey_type",
+            "notes",
+            "notes_easting_northing",
+            "region",
+            "references",
+            "periods",
+            "features",
+            "periods",
+            "features",
         )
-    
-
-

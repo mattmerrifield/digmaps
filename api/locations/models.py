@@ -9,6 +9,7 @@ class Region(models.Model):
 
     Can be nested. Be cautious when making queries for sites in a given region
     """
+
     name = models.CharField(max_length=50)
     description = models.TextField()
 
@@ -20,27 +21,41 @@ class Site(models.Model):
     """
     An archaeological site.
     """
-    SURVEY_CHOICES = (
-        ('surface', 'Surface Survey'),
-        ('excavation', 'Excavation'),
-    )
 
-    code = models.CharField(max_length=40, help_text="Short, meaningful ID for the site. Assigned by the admin")
-    modern_name = models.CharField(max_length=50, blank=True, help_text="Name used by modern peoples")
-    ancient_name = models.CharField(max_length=50, blank=True, help_text="Name used by ancient peoples")
+    SURVEY_CHOICES = (("surface", "Surface Survey"), ("excavation", "Excavation"))
+
+    code = models.CharField(
+        max_length=40,
+        help_text="Short, meaningful ID for the site. Assigned by the admin",
+    )
+    modern_name = models.CharField(
+        max_length=50, blank=True, help_text="Name used by modern peoples"
+    )
+    ancient_name = models.CharField(
+        max_length=50, blank=True, help_text="Name used by ancient peoples"
+    )
     coordinates = PointField()
-    area = models.FloatField(null=True, blank=True, help_text="Area in Hectares. Null is 'unknown'")
+    area = models.FloatField(
+        null=True, blank=True, help_text="Area in Hectares. Null is 'unknown'"
+    )
     population = models.FloatField(null=True, blank=True)
-    survey_type = models.CharField(blank=True, default="", choices=SURVEY_CHOICES, max_length=25)
+    survey_type = models.CharField(
+        blank=True, default="", choices=SURVEY_CHOICES, max_length=25
+    )
     notes = models.TextField(blank=True, default="")
     notes_easting_northing = models.TextField(
-        blank=True, default='',
-        help_text="value of the original coordinate system of record, if it was easting/northing. Do not use directly"
+        blank=True,
+        default="",
+        help_text="value of the original coordinate system of record, if it was easting/northing. Do not use directly",
     )
     region = models.ForeignKey(Region, null=True, on_delete=models.SET_NULL)
-    references = models.ManyToManyField('bibliography.Publication')
-    features = models.ManyToManyField('Feature', related_name='sites', through='SiteFeature')
-    periods = models.ManyToManyField('Period', related_name='sites', through='SitePeriod')
+    references = models.ManyToManyField("bibliography.Publication")
+    features = models.ManyToManyField(
+        "Feature", related_name="sites", through="SiteFeature"
+    )
+    periods = models.ManyToManyField(
+        "Period", related_name="sites", through="SitePeriod"
+    )
 
 
 class Feature(models.Model):
@@ -53,19 +68,15 @@ class Feature(models.Model):
         - Carin Burial
     """
 
-    TOMB = 'tomb'
-    CARIN = 'carin'
-    CEMETARY = 'cemetary'
+    TOMB = "tomb"
+    CARIN = "carin"
+    CEMETARY = "cemetary"
 
-    BURIAL_TYPES = [
-        (TOMB, 'Tomb'),
-        (CARIN, 'Carins'),
-        (CEMETARY, 'Cemetary'),
-    ]
+    BURIAL_TYPES = [(TOMB, "Tomb"), (CARIN, "Carins"), (CEMETARY, "Cemetary")]
 
     shortname = models.CharField(max_length=200, unique=True)
     name = models.CharField(max_length=50)
-    description = models.TextField(default='')
+    description = models.TextField(default="")
 
 
 class Period(models.Model):
@@ -77,9 +88,12 @@ class Period(models.Model):
     When attached to a Feature, indicates presence of that feature during
     that time
     """
+
     name = models.CharField(max_length=50)
-    shortname = models.CharField(max_length=10, unique=True, help_text="Unique code name, e.g. 'EBIV'")
-    description = models.TextField(default='')
+    shortname = models.CharField(
+        max_length=10, unique=True, help_text="Unique code name, e.g. 'EBIV'"
+    )
+    description = models.TextField(default="")
     start = models.IntegerField(help_text="Approximate Beginning (BCE is negative)")
     end = models.IntegerField(help_text="Approximate Ending (BCE is negative)")
 
@@ -92,24 +106,24 @@ class SiteFeature(models.Model):
     Tag a site with a feature. Optionally, specify the period(s) for which the
     tag is valid.
     """
-    class Meta:
-        unique_together = ('site', 'feature')
 
-    site = models.ForeignKey('Site', on_delete=models.CASCADE)
-    feature = models.ForeignKey('Feature', on_delete=models.CASCADE)
+    class Meta:
+        unique_together = ("site", "feature")
+
+    site = models.ForeignKey("Site", on_delete=models.CASCADE)
+    feature = models.ForeignKey("Feature", on_delete=models.CASCADE)
     evidence = models.IntegerField(
-        default=Evidence.TYPICAL, choices=Evidence.CHOICES,
-        help_text="How clear is the evidence for the site to have this feature?"
+        default=Evidence.TYPICAL,
+        choices=Evidence.CHOICES,
+        help_text="How clear is the evidence for the site to have this feature?",
     )
-    periods = models.ManyToManyField('Period')
+    periods = models.ManyToManyField("Period")
 
 
 class SitePeriod(models.Model):
     """
     Vanilla through-model
     """
-    site = models.ForeignKey('Site', on_delete=models.CASCADE)
-    period = models.ForeignKey('Period', on_delete=models.CASCADE)
 
-
-
+    site = models.ForeignKey("Site", on_delete=models.CASCADE)
+    period = models.ForeignKey("Period", on_delete=models.CASCADE)
