@@ -1,5 +1,7 @@
 from graphene_django import DjangoObjectType
 import graphene
+from graphene_django.filter import DjangoFilterConnectionField
+
 from locations import models as locations
 
 
@@ -10,8 +12,13 @@ class Region(DjangoObjectType):
 
 class Site(DjangoObjectType):
     class Meta:
-        filter_fields = ["id", "region", "modern_name", "ancient_name", "population"]
+        filter_fields = {
+            "region__name":['exact', 'icontains'],
+            "modern_name": ['icontains'],
+            "ancient_name": ['icontains'],
+        }
         model = locations.Site
+        interfaces = (graphene.relay.Node,)
 
 
 class Feature(DjangoObjectType):
@@ -31,15 +38,12 @@ class SiteFeature(DjangoObjectType):
 
 class Query(graphene.ObjectType):
     regions = graphene.List(Region)
-    sites = graphene.List(Site, id=graphene.ID())
+    sites = graphene.List(Site, id=graphene.ID(), modern_name=graphene.String(), ancient_name=graphene.String())
     features = graphene.List(Feature)
     periods = graphene.List(Period)
 
     def resolve_regions(self, info):
         return locations.Region.objects.all()
-
-    def resolve_sites(self, info, id):
-        return locations.Site.objects.filter(id=id)
 
     def resolve_features(self, info):
         return locations.Feature.objects.all()
