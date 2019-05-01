@@ -1,5 +1,5 @@
 # onbuild docker image automatically runs pip install on requirements.txt
-FROM python:3
+FROM python:3.6
 
 # Additional utilities
 RUN apt-get update && apt-get install -y \
@@ -19,5 +19,5 @@ EXPOSE 80
 # Pip last, since these things change so frequently, we'll rebuild them almost
 # every time
 RUN pip install --no-cache-dir -r requirements.txt
-CMD ["python3", "manage.py", "runserver", "0.0.0.0:80"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:80"]
 
