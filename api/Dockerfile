@@ -18,6 +18,6 @@ EXPOSE 80
 
 # Pip last, since these things change so frequently, we'll rebuild them almost
 # every time
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r frozen_requirements.txt
 CMD ["python", "manage.py", "runserver", "0.0.0.0:80"]
 
