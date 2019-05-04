@@ -4,7 +4,9 @@ from graphene_django_extras import (
     DjangoSerializerType,
     DjangoObjectType,
     DjangoFilterPaginateListField,
-    DjangoListObjectField, DjangoFilterListField)
+    DjangoListObjectField,
+    DjangoFilterListField,
+)
 import graphene
 
 from gql.objects import CoordinateType
@@ -16,7 +18,9 @@ from locations import serializers
 # Register the weird type we want to use
 from django.contrib.gis.db.models import PointField
 from graphene_django.converter import convert_django_field
-from graphene_django_extras.converter import convert_django_field as convert_django_field_extra
+from graphene_django_extras.converter import (
+    convert_django_field as convert_django_field_extra,
+)
 
 
 @convert_django_field_extra.register(PointField)
@@ -31,8 +35,8 @@ class SiteType(DjangoSerializerType):
     class Meta:
         serializer_class = serializers.SiteSerializer
         filter_fields = {
-            "id": ['exact'],
-            "region__id": ['exact',],
+            "id": ["exact"],
+            "region__id": ["exact"],
             "region__name": ["exact", "icontains"],
             "modern_name": ["icontains"],
             "ancient_name": ["icontains"],
@@ -61,6 +65,7 @@ class SiteFeatureType(DjangoSerializerType):
 
 class Query(graphene.ObjectType):
     """Start a top-level query somehow"""
+
     site = SiteType.RetrieveField()
     site_list = SiteType.ListField()
 
