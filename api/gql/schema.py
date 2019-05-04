@@ -1,3 +1,4 @@
+from graphene_django_extras import DjangoListObjectType, DjangoSerializerType, DjangoObjectType, DjangoFilterPaginateListField
 from graphene_django import DjangoObjectType
 import graphene
 
@@ -9,7 +10,7 @@ class Region(DjangoObjectType):
         model = locations.Region
 
 
-class Site(DjangoObjectType):
+class Site(DjangoListObjectType):
     class Meta:
         filter_fields = {
             "region__name": ["exact", "icontains"],
