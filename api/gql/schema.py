@@ -1,4 +1,9 @@
-from graphene_django_extras import DjangoListObjectType, DjangoSerializerType, DjangoObjectType, DjangoFilterPaginateListField
+from graphene_django_extras import (
+    DjangoListObjectType,
+    DjangoSerializerType,
+    DjangoObjectType,
+    DjangoFilterPaginateListField,
+)
 from graphene_django import DjangoObjectType
 import graphene
 
