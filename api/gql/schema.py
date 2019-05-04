@@ -1,6 +1,5 @@
 from graphene_django import DjangoObjectType
 import graphene
-from graphene_django.filter import DjangoFilterConnectionField
 
 from locations import models as locations
 
@@ -47,14 +46,14 @@ class Query(graphene.ObjectType):
     features = graphene.List(Feature)
     periods = graphene.List(Period)
 
-    def resolve_regions(self, info):
-        return locations.Region.objects.all()
-
-    def resolve_features(self, info):
-        return locations.Feature.objects.all()
-
-    def resolve_periods(self, info):
-        return locations.Period.objects.all()
+    # def resolve_regions(self, info):
+    #     return locations.Region.objects.all()
+    #
+    # def resolve_features(self, info):
+    #     return locations.Feature.objects.all()
+    #
+    # def resolve_periods(self, info):
+    #     return locations.Period.objects.all()
 
 
 schema = graphene.Schema(query=Query)
