@@ -12,12 +12,16 @@ RUN apt-get update && apt-get install -y \
 
 # Gotta stuff the code somewhere and make it visible to python
 WORKDIR /code
-COPY . /code
 ENV PYTHONPATH $PYTHONPATH:/code
 EXPOSE 80
 
-# Pip last, since these things change so frequently, we'll rebuild them almost
-# every time
+# pip install only when the reqirements change
+COPY frozen_requirements.txt .
 RUN pip install --no-cache-dir -r frozen_requirements.txt
-CMD ["python", "manage.py", "runserver_plus", "0.0.0.0:80"]
+
+# Add the whole code directory later so we don't trigger a rebuild
+# every time *anything* in the repo changes; only for some stuff
+COPY . /code
+
+CMD ["python", "manage.py", "runserver_plus","--nopin", "0.0.0.0:80"]
 

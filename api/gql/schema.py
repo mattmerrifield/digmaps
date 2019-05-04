@@ -1,3 +1,4 @@
+from django_filters import FilterSet
 from graphene_django_extras import (
     DjangoListObjectType,
     DjangoSerializerType,
@@ -14,7 +15,7 @@ from locations import models as locations
 #################3
 # Register the weird type we want to use
 from django.contrib.gis.db.models import PointField
-from graphene_django_extras.converter import convert_django_field
+from graphene_django.converter import convert_django_field
 
 
 @convert_django_field.register(PointField)
@@ -29,15 +30,19 @@ class Region(DjangoObjectType):
         model = locations.Region
 
 
-class Site(DjangoObjectType):
+class SiteFilter(FilterSet):
     class Meta:
-        filter_fields = {
+        fields = {
             "region__name": ["exact", "icontains"],
             "modern_name": ["icontains"],
             "ancient_name": ["icontains"],
         }
         model = locations.Site
-        interfaces = (graphene.relay.Node,)
+
+
+class Site(DjangoObjectType):
+    class Meta:
+        model = locations.Site
 
 
 class Feature(DjangoObjectType):
@@ -59,15 +64,10 @@ class Query(graphene.ObjectType):
     regions = graphene.List(Region)
     sites = DjangoFilterPaginateListField(
         Site,
-        id=graphene.ID(),
-        modern_name=graphene.String(),
-        ancient_name=graphene.String(),
+        filterset_class=SiteFilter,
     )
     features = graphene.List(Feature)
     periods = graphene.List(Period)
-
-    def resolve_sites(self, info, id=None, modern_name=None, ancient_name=None):
-        return locations.Site.objects.all()
 
     def resolve_regions(self, info):
         return locations.Region.objects.all()

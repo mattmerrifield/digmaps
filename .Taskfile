@@ -57,6 +57,7 @@ function build() { dc_all build $@; }
 function start() { dc_all start $@; }
 function stop() { dc_all stop $@; }
 function restart() { dc_all restart $@; }
+function logs() { dc_all logs $@; }
 
 # Pass up/down to just the site-specific containers
 function up() { dc up $@; }
