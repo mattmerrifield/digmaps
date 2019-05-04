@@ -46,7 +46,7 @@ class Query(graphene.ObjectType):
     features = graphene.List(Feature)
     periods = graphene.List(Period)
 
-    def resolve_sites(self, info, id, modern_name, ancient_name):
+    def resolve_sites(self, info, id=None, modern_name=None, ancient_name=None):
         return locations.Site.objects.all()
 
     def resolve_regions(self, info):
