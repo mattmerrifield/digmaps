@@ -37,7 +37,7 @@ class SiteFeature(DjangoObjectType):
 
 class Query(graphene.ObjectType):
     regions = graphene.List(Region)
-    sites = graphene.List(
+    sites = DjangoFilterPaginateListField(
         Site,
         id=graphene.ID(),
         modern_name=graphene.String(),
