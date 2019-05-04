@@ -7,7 +7,21 @@ from graphene_django_extras import (
 from graphene_django import DjangoObjectType
 import graphene
 
+from gql.objects import CoordinateType
 from locations import models as locations
+
+
+#################3
+# Register the weird type we want to use
+from django.contrib.gis.db.models import PointField
+from graphene_django_extras.converter import convert_django_field
+
+
+@convert_django_field.register(PointField)
+def convert_field_to_geojson(field, registry=None):
+    return graphene.Field(
+        CoordinateType, description=field.help_text, required=not field.null
+    )
 
 
 class Region(DjangoObjectType):
@@ -15,7 +29,7 @@ class Region(DjangoObjectType):
         model = locations.Region
 
 
-class Site(DjangoListObjectType):
+class Site(DjangoObjectType):
     class Meta:
         filter_fields = {
             "region__name": ["exact", "icontains"],
