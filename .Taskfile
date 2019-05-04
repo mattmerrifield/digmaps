@@ -3,24 +3,30 @@ set -euo pipefail
 IFS=$'\n\t'
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
+function dc() {
+    # Alias to docker compose that always chooses the right
+    # compose file
+    local FILENAME=$DIR/docker-compose.yml;
+    docker-compose -f $FILENAME $@
+
+}
 
 function dc_do() {
-    # Alias to docker compose that always chooses the right
-    # compose file, and will either run or exec depending on
-    # whether the named container is already running
+    # Runs the given command in docker-compose in an existing
+    # container if there is one, or spins up a new one if there
+    # isn't.
     #
     # Among other things, this lets us keep the DB up and
     # running all the time, but bring up the API, front-end
     # compiler, or the web container only temporarily to run
     # a specific command
-    local FILENAME=$DIR/docker-compose.yml;
     local IS_RUNNING=$(docker-compose ps -q $1)
     if [[ "$IS_RUNNING" != "" ]]; then
         local do=exec
     else
         local do=run
     fi
-    docker-compose -f $FILENAME $do $@
+    dc $do $@
 }
 
 function bash() {
