@@ -13,9 +13,9 @@ class Region(DjangoObjectType):
 class Site(DjangoObjectType):
     class Meta:
         filter_fields = {
-            "region__name":['exact', 'icontains'],
-            "modern_name": ['icontains'],
-            "ancient_name": ['icontains'],
+            "region__name": ["exact", "icontains"],
+            "modern_name": ["icontains"],
+            "ancient_name": ["icontains"],
         }
         model = locations.Site
         interfaces = (graphene.relay.Node,)
@@ -38,7 +38,12 @@ class SiteFeature(DjangoObjectType):
 
 class Query(graphene.ObjectType):
     regions = graphene.List(Region)
-    sites = graphene.List(Site, id=graphene.ID(), modern_name=graphene.String(), ancient_name=graphene.String())
+    sites = graphene.List(
+        Site,
+        id=graphene.ID(),
+        modern_name=graphene.String(),
+        ancient_name=graphene.String(),
+    )
     features = graphene.List(Feature)
     periods = graphene.List(Period)
 

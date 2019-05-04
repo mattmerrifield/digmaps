@@ -1,0 +1,15 @@
+version: '2'
+services:
+  black-formatter:
+    # Python code formatting
+    build:
+      context: tools
+      dockerfile: black.Dockerfile
+    # Show it our python code
+    volumes:
+      - ./api:/code
+    # and format all our python code by default
+    entrypoint:
+      - "black"
+      - "."
+

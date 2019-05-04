@@ -3,12 +3,22 @@ set -euo pipefail
 IFS=$'\n\t'
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
+
+# One compose file full of the system dependencies
+COMPOSE_FILE=$DIR/docker-compose.yml;
+
+# Another compose file for scriptable one-off things
+DEVTOOLS_COMPOSE=$DIR/docker-compose-devtools.yml
+
 function dc() {
     # Alias to docker compose that always chooses the right
     # compose file
-    local FILENAME=$DIR/docker-compose.yml;
-    docker-compose -f $FILENAME $@
+    docker-compose -f $COMPOSE_FILE $@
+}
 
+function dc_dev() {
+    # Run devtools stuff
+    docker-compose -f $DEVTOOLS_COMPOSE $@
 }
 
 function dc_do() {
@@ -27,6 +37,16 @@ function dc_do() {
         local do=run
     fi
     dc $do $@
+}
+
+function build() {
+    # build *all* the docker images!
+    docker-compose -f $COMPOSE_FILE -f $DEVTOOLS_COMPOSE build
+}
+
+function up() {
+    # Brings up a local version of the site
+    dc up;
 }
 
 function bash() {
@@ -55,6 +75,12 @@ function manage () {
 function dbshell() {
     # Get a database shell in the existing docker container
     dc_do db psql --user postgres;
+}
+
+function black() {
+    # Python code formatter.
+    # You can wear any color you like as long as it's black.
+    dc_dev run black-formatter $@
 }
 
 # This "$@" construct means we will run this file as if it were a
