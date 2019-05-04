@@ -4,6 +4,9 @@ IFS=$'\n\t'
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
 
+###################
+# Building blocks #
+###################
 # One compose file full of the system dependencies
 COMPOSE_FILE=$DIR/docker-compose.yml;
 
@@ -20,6 +23,11 @@ function dc_dev() {
     # Run devtools stuff
     docker-compose -f $DEVTOOLS_COMPOSE $@
 }
+
+function dc_all() {
+    docker-compose -f $COMPOSE_FILE -f $DEVTOOLS_COMPOSE $@
+}
+
 
 function dc_do() {
     # Runs the given command in docker-compose in an existing
@@ -39,9 +47,17 @@ function dc_do() {
     dc $do $@
 }
 
+################
+# Docker Tasks #
+################
 function build() {
     # build *all* the docker images!
-    docker-compose -f $COMPOSE_FILE -f $DEVTOOLS_COMPOSE build
+    dc_all build $@
+}
+
+function restart() {
+    # build *all* the docker images!
+    dc_all restart $@
 }
 
 function up() {
@@ -59,6 +75,9 @@ function bash() {
     dc_do $container_name bash $@;
 }
 
+################
+# Python Tasks #
+################
 function pip_freeze() {
     # Update pip requirements
     local requirements_file=$(DIR/api/frozen_requirements.txt)
@@ -72,10 +91,7 @@ function manage () {
     dc_do api python manage.py $@;
 }
 
-function dbshell() {
-    # Get a database shell in the existing docker container
-    dc_do db psql --user postgres;
-}
+
 
 function black() {
     # Python code formatter.
@@ -83,6 +99,24 @@ function black() {
     dc_dev run black-formatter $@
 }
 
+##################
+# Database Tasks #
+##################
+function dbshell() {
+    # Get a database shell in the existing docker container
+    dc_do db psql --user postgres;
+}
+
+function dbinit() {
+    # Get a database shell in the existing docker container
+    manage migrate
+    manage load_excel data.xlsx
+}
+
+
+########
+# MAIN #
+########
 # This "$@" construct means we will run this file as if it were a
 # standalone script. The first argument will be the command to run
 # (which should be a function from within the file) and the rest
