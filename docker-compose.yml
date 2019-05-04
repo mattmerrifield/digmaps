@@ -15,6 +15,7 @@ services:
       - db
     ports:
       - "8000:8000"
+    command: "python manage.py runserver_plus 0.0.0.0:80"
 
   jupyter:
     container_name: jupyter
@@ -26,14 +27,6 @@ services:
     command: "python3 api/manage.py shell_plus --notebook"
     depends_on:
       - db
-
-  elm:
-    container_name: elm
-    build: "./elm"
-    volumes:
-      - ./web:/code
-    depends_on:
-      - api
 
   www:
     container_name: www
