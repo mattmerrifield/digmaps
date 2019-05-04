@@ -9,6 +9,7 @@ import graphene
 
 from gql.objects import CoordinateType
 from locations import models as locations
+from locations import serializers
 
 
 #################3
@@ -26,14 +27,9 @@ def convert_field_to_geojson(field, registry=None, *args, **kwargs):
     )
 
 
-class Region(DjangoObjectType):
+class SiteType(DjangoSerializerType):
     class Meta:
-        model = locations.Region
-
-
-class SiteListType(DjangoObjectType):
-    class Meta:
-        model = locations.Site
+        serializer_class = serializers.SiteSerializer
         filter_fields = {
             "id": ['exact'],
             "region__id": ['exact',],
@@ -43,26 +39,39 @@ class SiteListType(DjangoObjectType):
         }
 
 
-class Feature(DjangoObjectType):
+class RegionType(DjangoSerializerType):
     class Meta:
-        model = locations.Feature
+        serializer_class = serializers.RegionSerializer
 
 
-class Period(DjangoObjectType):
+class FeatureType(DjangoSerializerType):
     class Meta:
-        model = locations.Period
+        serializer_class = serializers.FeatureSerializer
 
 
-class SiteFeature(DjangoObjectType):
+class PeriodType(DjangoSerializerType):
     class Meta:
-        model = locations.SiteFeature
+        serializer_class = serializers.PeriodSerializer
+
+
+class SiteFeatureType(DjangoSerializerType):
+    class Meta:
+        serializer_class = serializers.SiteFeatureSerializer
 
 
 class Query(graphene.ObjectType):
-    regions = DjangoFilterListField(Region)
-    sites = DjangoFilterListField(SiteListType)
-    features = DjangoFilterListField(Feature)
-    periods = DjangoFilterListField(Period)
+    """Start a top-level query somehow"""
+    site = SiteType.RetrieveField()
+    site_list = SiteType.ListField()
+
+    region = RegionType.RetrieveField()
+    region_list = RegionType.ListField()
+
+    siteFeature = SiteFeatureType.RetrieveField()
+    siteFeature_list = SiteFeatureType.ListField()
+
+    feature = FeatureType.RetrieveField()
+    feature_list = FeatureType.ListField()
 
 
 schema = graphene.Schema(query=Query)

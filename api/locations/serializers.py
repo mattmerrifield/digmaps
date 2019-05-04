@@ -122,6 +122,13 @@ class RegionSerializer(NestableModelSerializer):
         fields = ("name", "description")
 
 
+class SiteFeatureSerializer(NestableModelSerializer):
+    class Meta:
+        model = models.SiteFeature
+        depth = 2
+        fields = ("site", "feature", "evidence", "periods")
+
+
 class SiteSerializer(NestableModelSerializer):
     features = FeatureSummarySerializer(many=True, required=False, read_only=True)
     periods = PeriodSummarySerializer(many=True, required=False, read_only=True)
