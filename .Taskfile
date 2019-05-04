@@ -53,14 +53,14 @@ function dc_do() {
 # Some commands we want to pass straight through to docker-compose
 
 # We usually want to build, start, and stop specific containers
-build() {dc_all build $@}
-start() {dc_all start $@}
-stop() {dc_all stop $@}
-restart() {dc_all restart $@}
+function build() { dc_all build $@; }
+function start() { dc_all start $@; }
+function stop() { dc_all stop $@; }
+function restart() { dc_all restart $@; }
 
 # Pass up/down to just the site-specific containers
-up() {dc up $@;}
-down() {dc down $@;}
+function up() { dc up $@; }
+function down() { dc down $@; }
 
 function bash() {
     # Grab a bash shell on the named container (api by default)
