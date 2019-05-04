@@ -23,5 +23,6 @@ RUN pip install --no-cache-dir -r frozen_requirements.txt
 # every time *anything* in the repo changes; only for some stuff
 COPY . /code
 
+EXPOSE 8000
 CMD ["python", "manage.py", "runserver_plus","--nopin", "0.0.0.0:80"]
 

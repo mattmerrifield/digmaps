@@ -13,6 +13,8 @@ services:
       - ./api:/code
     depends_on:
       - db
+    ports:
+      - "8000:8000"
 
   jupyter:
     container_name: jupyter
