@@ -52,8 +52,9 @@ INSTALLED_APPS = [
 GRAPHENE = {"SCHEMA": "gql.schema.schema"}  # Where your Graphene gql lives
 
 GRAPHENE_DJANGO_EXTRAS = {
-    "DEFAULT_PAGINATION_CLASS": "graphene_django_extras.paginations.LimitOffsetGraphqlPagination",
+    "DEFAULT_PAGINATION_CLASS": "gql.defaults.DefaultPaginator",
     "DEFAULT_PAGE_SIZE": 20,
+    "DEFAULT_ORDERING": 'id',
     "MAX_PAGE_SIZE": 50,
     "CACHE_ACTIVE": True,
     "CACHE_TIMEOUT": 300,  # seconds
