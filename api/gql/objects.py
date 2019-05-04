@@ -3,9 +3,13 @@ from django.contrib.gis.db.models import PointField
 from graphene_django_extras.converter import convert_django_field
 
 
+
+
 class CoordinateType(graphene.ObjectType):
     """
     An extremely simple representation of a single coordinate
+
+    Not exactly GEOJSON compatible
     """
 
     x = graphene.Float()
