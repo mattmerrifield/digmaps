@@ -1,5 +1,6 @@
 import graphene
 
+
 class CoordinateType(graphene.ObjectType):
     """
     An extremely simple representation of a single coordinate
