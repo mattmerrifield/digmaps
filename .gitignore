@@ -106,3 +106,6 @@ Untitled*.ipynb
 # Elm build artifacts
 elm/elm-stuff/*
 elm/elm-package.json
+
+#npm stuff
+package-lock.json
