@@ -33,6 +33,7 @@ class Region(DjangoObjectType):
 class SiteFilter(FilterSet):
     class Meta:
         fields = {
+            "id": ['exact'],
             "region__name": ["exact", "icontains"],
             "modern_name": ["icontains"],
             "ancient_name": ["icontains"],
