@@ -1,5 +1,58 @@
-#!/usr/bin/sh
+#!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
 
-freeze() {
- docker-compose run api pip freeze > api/frozen_requirements.txt
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
+
+function dc_do() {
+    # Alias to docker compose that always chooses the right
+    # compose file, and will either run or exec depending on
+    # whether the named container is already running
+    #
+    # Among other things, this lets us keep the DB up and
+    # running all the time, but bring up the API, front-end
+    # compiler, or the web container only temporarily to run
+    # a specific command
+    local FILENAME=$DIR/docker-compose.yml;
+    local IS_RUNNING=$(docker-compose ps -q $1)
+    if [[ "$IS_RUNNING" != "" ]]; then
+        local do=exec
+    else
+        local do=run
+    fi
+    docker-compose -f $FILENAME $do $@
 }
+
+function bash() {
+    # Grab a bash shell on the named container (api by default)
+    local container_name=${1:-api};
+    # Pass the rest of the args to bash directly
+    if [ "$#" != "0" ]; then
+        shift;
+    fi
+    dc_do $container_name bash $@;
+}
+
+function pip_freeze() {
+    # Update pip requirements
+    local requirements_file=$(DIR/api/frozen_requirements.txt)
+    echo "Freezing pip requirements to $requirements_file";
+    dc_do api pip freeze > $requirements_file;
+    echo "Done"
+}
+
+function manage () {
+    # Run the django management command in the API container
+    dc_do api python manage.py $@;
+}
+
+function dbshell() {
+    # Get a database shell in the existing docker container
+    dc_do db psql --user postgres;
+}
+
+# This "$@" construct means we will run this file as if it were a
+# standalone script. The first argument will be the command to run
+# (which should be a function from within the file) and the rest
+# of the args are passed to that command.
+"$@"
