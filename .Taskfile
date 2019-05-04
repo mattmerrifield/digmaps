@@ -61,6 +61,7 @@ function restart() { dc_all restart $@; }
 # Pass up/down to just the site-specific containers
 function up() { dc up $@; }
 function down() { dc down $@; }
+function ps() { dc ps $@; }
 
 function bash() {
     # Grab a bash shell on the named container (api by default)
