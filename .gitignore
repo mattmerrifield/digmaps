@@ -88,9 +88,6 @@ ENV/
 # Rope project settings
 .ropeproject
 
-# Docker initialization
-db/data
-
 # Excel data
 *.xlsx
 

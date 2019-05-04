@@ -1,0 +1,3 @@
+CREATE SCHEMA digmaps;
+CREATE DATABASE digmaps;
+CREATE EXTENSION postgis;
