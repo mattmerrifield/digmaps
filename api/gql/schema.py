@@ -4,8 +4,7 @@ from graphene_django_extras import (
     DjangoSerializerType,
     DjangoObjectType,
     DjangoFilterPaginateListField,
-)
-from graphene_django import DjangoObjectType
+    DjangoListObjectField, DjangoFilterListField)
 import graphene
 
 from gql.objects import CoordinateType
@@ -16,10 +15,12 @@ from locations import models as locations
 # Register the weird type we want to use
 from django.contrib.gis.db.models import PointField
 from graphene_django.converter import convert_django_field
+from graphene_django_extras.converter import convert_django_field as convert_django_field_extra
 
 
+@convert_django_field_extra.register(PointField)
 @convert_django_field.register(PointField)
-def convert_field_to_geojson(field, registry=None):
+def convert_field_to_geojson(field, registry=None, *args, **kwargs):
     return graphene.Field(
         CoordinateType, description=field.help_text, required=not field.null
     )
@@ -30,20 +31,16 @@ class Region(DjangoObjectType):
         model = locations.Region
 
 
-class SiteFilter(FilterSet):
+class SiteListType(DjangoObjectType):
     class Meta:
-        fields = {
+        model = locations.Site
+        filter_fields = {
             "id": ['exact'],
+            "region__id": ['exact',],
             "region__name": ["exact", "icontains"],
             "modern_name": ["icontains"],
             "ancient_name": ["icontains"],
         }
-        model = locations.Site
-
-
-class Site(DjangoObjectType):
-    class Meta:
-        model = locations.Site
 
 
 class Feature(DjangoObjectType):
@@ -62,22 +59,10 @@ class SiteFeature(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
-    regions = graphene.List(Region)
-    sites = DjangoFilterPaginateListField(
-        Site,
-        filterset_class=SiteFilter,
-    )
-    features = graphene.List(Feature)
-    periods = graphene.List(Period)
-
-    def resolve_regions(self, info):
-        return locations.Region.objects.all()
-
-    def resolve_features(self, info):
-        return locations.Feature.objects.all()
-
-    def resolve_periods(self, info):
-        return locations.Period.objects.all()
+    regions = DjangoFilterListField(Region)
+    sites = DjangoFilterListField(SiteListType)
+    features = DjangoFilterListField(Feature)
+    periods = DjangoFilterListField(Period)
 
 
 schema = graphene.Schema(query=Query)
