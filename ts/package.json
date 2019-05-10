@@ -11,7 +11,14 @@
   "devDependencies": {
     "@types/node": "^6.0.50",
     "typescript": "^2.3.2",
-    "nodemon": "^1.11.0"
+    "nodemon": "^1.11.0",
+    "react": "^16.8.6"
   },
-  "main": "./dist/index.js"
+  "main": "./dist/index.js",
+  "dependencies": {
+    "apollo-boost": "^0.3.1",
+    "graphql": "^14.3.0",
+    "graphql-tag": "^2.10.1",
+    "react-apollo": "^2.5.5"
+  }
 }
