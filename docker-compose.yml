@@ -24,7 +24,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./web/static:/usr/share/nginx/html
+      - ./web/static:/usr/share/nginx/static
       - ./web/conf:/etc/nginx
     depends_on:
       - api
