@@ -43,7 +43,7 @@ function dc_do() {
         echo "$1 has been created"
         if [ -z `docker ps -q --no-trunc | grep $(docker-compose ps -q $1)` ]; then
           echo "it's not running."
-          local do=run
+          local do="run --rm"
         else
           echo "it's already running."
           local do=exec
