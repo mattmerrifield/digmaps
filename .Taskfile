@@ -114,6 +114,10 @@ function npm() {
     dc run ts npm $@
 }
 
+function compile() {
+    dc_dev run ts-compile $@
+}
+
 
 ##################
 # Database Tasks #

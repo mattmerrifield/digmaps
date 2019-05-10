@@ -22,6 +22,7 @@ services:
       - 3000:3000
     volumes:
       - ./ts:/code
+    command: "npm start"
 
   web:
     build: "./web"
