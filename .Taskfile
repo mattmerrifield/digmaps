@@ -98,6 +98,15 @@ function black() {
     dc_dev run black-formatter $@
 }
 
+####################
+# Typescript Tasks #
+####################
+
+function npm() {
+    dc_do ts npm $@
+}
+
+
 ##################
 # Database Tasks #
 ##################
