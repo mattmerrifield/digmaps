@@ -38,10 +38,18 @@ function dc_do() {
     # running all the time, but bring up the API, front-end
     # compiler, or the web container only temporarily to run
     # a specific command
-    local IS_RUNNING=$(docker-compose ps -q $1)
-    if [[ "$IS_RUNNING" != "" ]]; then
-        local do=exec
+    local CONTAINER_ID=$(docker-compose ps -q $1)
+    if [[ "$CONTAINER_ID" != "" ]]; then
+        echo "$1 has been created"
+        if [ -z `docker ps -q --no-trunc | grep $(docker-compose ps -q $1)` ]; then
+          echo "it's not running."
+          local do=run
+        else
+          echo "it's already running."
+          local do=exec
+        fi
     else
+        echo "$1 has not been created"
         local do=run
     fi
     dc $do $@
@@ -103,7 +111,7 @@ function black() {
 ####################
 
 function npm() {
-    dc_do ts npm $@
+    dc run ts npm $@
 }
 
 

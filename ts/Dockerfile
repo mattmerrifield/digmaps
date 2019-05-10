@@ -3,10 +3,13 @@
 # https://github.com/Microsoft/vscode-recipes/tree/master/Docker-TypeScript
 FROM node:8-slim
 
+RUN mkdir /code
+RUN mkdir /dist
 WORKDIR /code
+RUN npm install typescript -g
 
 COPY package.json /code
-COPY tsconfig.json /code
+COPY src/tsconfig.json /code
 RUN npm install
 
 EXPOSE 3000
