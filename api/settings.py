@@ -136,7 +136,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
-STATIC_URL = "/static/"
+# Everything in this website needs to be behind the api/ path, or nginx will not
+# direct the traffic here
+STATIC_URL = "/api/static/"
+STATIC_ROOT = BASE_DIR + 'static/'
 
 NOTEBOOK_ARGUMENTS = ["--ip", "0.0.0.0", "--port", "80", "--allow-root"]
 

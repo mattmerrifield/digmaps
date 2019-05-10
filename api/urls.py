@@ -20,7 +20,9 @@ from django.conf.urls import url
 from graphene_django.views import GraphQLView
 
 urlpatterns = [
-    url(r"^admin/", admin.site.urls),
-    url(r"^", include(location_router.urls)),
-    url(r"^gql", GraphQLView.as_view(graphiql=True)),
+    # Everything in this website needs to be behind the api/ path, or nginx will not
+    # direct the traffic here
+    url(r"^api/admin/", admin.site.urls),
+    url(r"^api/gql", GraphQLView.as_view(graphiql=True)),
+    url(r"^api/", include(location_router.urls)),
 ]
