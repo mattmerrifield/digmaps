@@ -21,7 +21,7 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ./ts:/code
+      - ./ts/src:/code/src
     command: "npm start"
 
   web:
