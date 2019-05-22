@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   db:
     build: "./db"
@@ -21,19 +21,31 @@ services:
     ports:
       - 3000:3000
     volumes:
+      - ./ts/dist:/code/dist
       - ./ts/src:/code/src
     command: "npm start"
+    depends_on:
+      - ts-compile
+
+  ts-compile:
+    build: "./ts"
+    volumes:
+      - ./ts/dist:/code/dist
+      - ./ts/src:/code/src
+    command: "npm run watch"
 
   web:
     build: "./web"
     ports:
       - "80:80"
     volumes:
+      - ./ts/dist:/usr/share/nginx/ts          # Shared volume for compiled code
       - ./web/static:/usr/share/nginx/static
       - ./web/conf:/etc/nginx
     depends_on:
       - api
       - db
+      - ts
 
 
 
