@@ -3,7 +3,8 @@ services:
   db:
     build: "./db"
     volumes:
-      - "./db/data:/docker-entrypoint-initdb.d/"   # SQL files here get executed when the container first starts
+      # SQL files here get executed when the container first starts
+      - "./db/data:/docker-entrypoint-initdb.d/"
 
   api:
     build: "./api"
@@ -15,6 +16,17 @@ services:
     ports:
       - "8000:8000"
     command: "python manage.py runserver_plus 0.0.0.0:8000"
+
+  jupyter:
+    container_name: jupyter
+    build: "./api"
+    ports:
+      - "8888:8888"  # Expose directly. Websockets do not play nicely with nginx proxy_pass
+    volumes:
+      - .:/code
+    command: "python3 api/manage.py shell_plus --notebook"
+    depends_on:
+      - db
 
   ts:
     build: "./ts"
@@ -46,6 +58,7 @@ services:
       - api
       - db
       - ts
+
 
 
 
