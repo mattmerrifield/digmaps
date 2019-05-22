@@ -141,7 +141,7 @@ USE_TZ = True
 STATIC_URL = "/api/static/"
 STATIC_ROOT = BASE_DIR + 'static/'
 
-NOTEBOOK_ARGUMENTS = ["--ip", "0.0.0.0", "--port", "8888", "--allow-root"]
+NOTEBOOK_ARGUMENTS = ["--ip", "0.0.0.0", "--port", "8888", "--allow-root", '--NotebookApp.token=""']
 
 
 REST_FRAMEWORK = {

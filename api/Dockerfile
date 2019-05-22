@@ -24,5 +24,5 @@ RUN pip install --no-cache-dir -r frozen_requirements.txt
 COPY . /code
 
 EXPOSE 8000
-CMD ["python", "manage.py", "runserver_plus","--nopin", "0.0.0.0:8000"]
+CMD ["python", "manage.py", "runserver_plus", "--nopin", "0.0.0.0:8000"]
 
