@@ -5,18 +5,18 @@ services:
     build:
       context: tools
       dockerfile: black.Dockerfile
-    # Show it our python code
     volumes:
       - ./api:/code
-    # and format all our python code by default
     entrypoint:
       - "black"
       - "."
 
-
-  ts-compile:
-    container_name: ts-compile
-    build: "./ts"    # Same Dockerfile as javascript so we've got access to node
+  manage:
+    # Run the Django management command
+    build:
+      context: ./api
     volumes:
-      - ./ts:/code
-    command: "npm run watch"  # Sit there and watch it go
+      - ./api:/code
+    entrypoint:
+      - "python"
+      - "manage.py"

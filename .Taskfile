@@ -95,7 +95,7 @@ function pip_freeze() {
 
 function manage () {
     # Run the django management command in the API container
-    dc_do api python manage.py $@;
+    dc_dev run manage $@;
 }
 
 
