@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "rest_framework_gis",
     "graphene_django",
     "gql",
+    "gis_ext",
 ]
 
 GRAPHENE = {"SCHEMA": "gql.schema.schema"}  # Where your Graphene gql lives

@@ -1,5 +1,5 @@
 from django.db import models
-from gql.objects import (
+from gis_ext.fields import (
     PointField,
 )  # Like django.contrib.gis.db.models.PointField, but with GQL support
 from locations.constants import Evidence
