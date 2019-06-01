@@ -139,9 +139,16 @@ USE_TZ = True
 # Everything in this website needs to be behind the api/ path, or nginx will not
 # direct the traffic here
 STATIC_URL = "/api/static/"
-STATIC_ROOT = BASE_DIR + 'static/'
+STATIC_ROOT = BASE_DIR + "static/"
 
-NOTEBOOK_ARGUMENTS = ["--ip", "0.0.0.0", "--port", "8888", "--allow-root", '--NotebookApp.token=""']
+NOTEBOOK_ARGUMENTS = [
+    "--ip",
+    "0.0.0.0",
+    "--port",
+    "8888",
+    "--allow-root",
+    '--NotebookApp.token=""',
+]
 
 
 REST_FRAMEWORK = {

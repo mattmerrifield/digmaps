@@ -11,6 +11,7 @@ services:
     volumes:
       - ./api:/code
       - ./api/static:/static
+    restart: always
     depends_on:
       - db
     ports:

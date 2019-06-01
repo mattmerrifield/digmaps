@@ -1,82 +1,60 @@
-from django_filters import FilterSet
-from graphene_django_extras import (
-    DjangoListObjectType,
-    DjangoSerializerType,
-    DjangoObjectType,
-    DjangoFilterPaginateListField,
-    DjangoListObjectField,
-    DjangoFilterListField,
-)
+from graphene_django_extras import DjangoObjectType
 import graphene
 
-from gql.objects import CoordinateType
+
+from graphene_django_extras import DjangoFilterPaginateListField
 from locations import models as locations
-from locations import serializers
 
 
-#################3
-# Register the weird type we want to use
-from django.contrib.gis.db.models import PointField
-from graphene_django.converter import convert_django_field
-from graphene_django_extras.converter import (
-    convert_django_field as convert_django_field_extra,
-)
-
-
-@convert_django_field_extra.register(PointField)
-@convert_django_field.register(PointField)
-def convert_field_to_geojson(field, registry=None, *args, **kwargs):
-    return graphene.Field(
-        CoordinateType, description=field.help_text, required=not field.null
-    )
-
-
-class SiteType(DjangoSerializerType):
+class SiteType(DjangoObjectType):
     class Meta:
-        serializer_class = serializers.SiteSerializer
+        model = locations.Site
         filter_fields = {
             "id": ["exact"],
+            "code": ["exact", "icontains"],
             "region__id": ["exact"],
             "region__name": ["exact", "icontains"],
             "modern_name": ["icontains"],
             "ancient_name": ["icontains"],
+            "area": ["lt", "gt"],
         }
 
 
-class RegionType(DjangoSerializerType):
+class RegionType(DjangoObjectType):
     class Meta:
-        serializer_class = serializers.RegionSerializer
+        model = locations.Region
+        filter_fields = {
+            "id": ["exact"],
+            "name": ["exact", "icontains"],
+            "description": ["icontains"],
+        }
 
 
-class FeatureType(DjangoSerializerType):
+class FeatureType(DjangoObjectType):
     class Meta:
-        serializer_class = serializers.FeatureSerializer
+        model = locations.Feature
 
 
-class PeriodType(DjangoSerializerType):
+class PeriodType(DjangoObjectType):
     class Meta:
-        serializer_class = serializers.PeriodSerializer
+        model = locations.Period
 
 
-class SiteFeatureType(DjangoSerializerType):
+class SiteFeatureType(DjangoObjectType):
     class Meta:
-        serializer_class = serializers.SiteFeatureSerializer
+        model = locations.SiteFeature
 
 
 class Query(graphene.ObjectType):
-    """Start a top-level query somehow"""
+    """
+    Start a top-level from one of the major models.
+    """
 
-    site = SiteType.RetrieveField()
-    site_list = SiteType.ListField()
+    sites = DjangoFilterPaginateListField(SiteType)
+    regions = DjangoFilterPaginateListField(RegionType)
+    site_features = DjangoFilterPaginateListField(SiteFeatureType)
+    features = DjangoFilterPaginateListField(FeatureType)
 
-    region = RegionType.RetrieveField()
-    region_list = RegionType.ListField()
-
-    siteFeature = SiteFeatureType.RetrieveField()
-    siteFeature_list = SiteFeatureType.ListField()
-
-    feature = FeatureType.RetrieveField()
-    feature_list = FeatureType.ListField()
 
 
 schema = graphene.Schema(query=Query)
