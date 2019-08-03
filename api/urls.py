@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from django.views.decorators.csrf import csrf_exempt
+
 from locations.views import router as location_router
 from django.conf.urls import url
 from graphene_django.views import GraphQLView
@@ -23,6 +25,6 @@ urlpatterns = [
     # Everything in this website needs to be behind the api/ path, or nginx will not
     # direct the traffic here
     url(r"^api/admin/", admin.site.urls),
-    url(r"^api/", GraphQLView.as_view(graphiql=True)),
+    url(r"^api/", csrf_exempt(GraphQLView.as_view(graphiql=True))),
     url(r"^api/rfxml", include(location_router.urls)),
 ]
