@@ -7,9 +7,11 @@
     "@types/node": "12.6.9",
     "@types/react": "16.8.24",
     "@types/react-dom": "16.8.5",
+    "@types/rebass": "^3.0.4",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.1",
+    "rebass": "^3.2.1",
     "typescript": "3.5.3"
   },
   "scripts": {

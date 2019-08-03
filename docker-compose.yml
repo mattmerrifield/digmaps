@@ -34,9 +34,13 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ./ts/dist:/code/dist
       - ./ts/src:/code/src
+      - ./ts/build:/code/build
       - ./ts/public:/code/public
+      # Persist the library directory in an anonymous volume
+      # This makes rebuilds faster, at the risk of some confusion
+      # You should be able to resolve issues by blowing away the whole container and starting from scratch
+      - /code/node_modules
 
   web:
     build: "./web"
