@@ -1,39 +1,57 @@
-import * as React from 'react';
+import React from 'react';
 import ReactMapGL, {NavigationControl, ViewState} from 'react-map-gl';
+import {ReactNode, useEffect, useState} from "react";
 
 const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN || '';
 
-const initialState = {
-    viewport: {
-        height: 400,
-        latitude: 37.776021,
-        longitude: -122.4171949,
-        width: 400,
-        zoom: 14,
-    },
-};
-type State = typeof initialState;
 
-export default class Map extends React.Component<{}, State> {
-    public state: State = initialState;
+// interface State {
+//     viewport: ViewState
+// }
 
-    public componentDidMount() {
-        window.addEventListener('resize', this.resize);
-        this.resize();
-    }
+interface MapProps {
+    children?: ReactNode
+    height?: number | string
+    width?: number | string
+}
 
-    public componentWillUnmount() {
-        window.removeEventListener('resize', this.resize);
-    }
+const FullScreenMap = (props: MapProps) => {
+    // A full-screen map widget
 
-    public updateViewport = (viewport: ViewState) => {
-        this.setState(prevState => ({
+    const initialState = {
+        viewport: {
+            latitude: 31.7683,
+            longitude: 35.2137,
+            zoom: 8,
+            height: props.height || 200,
+            width: props.width || 200,
+        },
+    };
+
+    type State = typeof initialState
+    const [state, setState] = useState<State>(initialState);
+
+    // Register the resize event listener with useEffect
+    // Pass in a function to execute when the component finishes mounting
+    // Return from the pass-in function another function to execute when the component unmounts
+    useEffect(
+        () => {
+        window.addEventListener('resize', resize);
+        resize();
+        // Return from the first function argument another function, which will be called during unmount
+        return () => window.removeEventListener('resize', resize);
+        },
+
+    );
+
+    const updateViewport = (viewport: ViewState) => {
+        setState(prevState => ({
             viewport: { ...prevState.viewport, ...viewport },
         }));
     };
 
-    public resize = () => {
-        this.setState(prevState => ({
+    const resize = () => {
+        setState(prevState => ({
             viewport: {
                 ...prevState.viewport,
                 height: window.innerHeight,
@@ -42,18 +60,18 @@ export default class Map extends React.Component<{}, State> {
         }));
     };
 
-    public render() {
-        const { viewport } = this.state;
-        return (
-            <ReactMapGL
-                {...viewport}
-                mapboxApiAccessToken={MAPBOX_TOKEN}
-                onViewportChange={(v: ViewState) => this.updateViewport(v)}
-            >
-                <div style={{ position: 'absolute', right: 30, bottom: 30 }}>
-                    <NavigationControl onViewportChange={this.updateViewport} />
-                </div>
-            </ReactMapGL>
-        );
-    }
-}
+    return (
+        <ReactMapGL
+            {...state.viewport}
+            mapboxApiAccessToken={MAPBOX_TOKEN}
+            onViewportChange={(v: ViewState) => updateViewport(v)}
+        >
+            <div style={{ position: 'absolute', right: 30, bottom: 30 }}>
+               <NavigationControl onViewportChange={updateViewport} />
+            </div>
+            {props.children}
+        </ReactMapGL>
+    );
+};
+
+export default FullScreenMap;
