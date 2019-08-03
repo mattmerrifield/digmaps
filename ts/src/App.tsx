@@ -3,6 +3,10 @@ import logo from './logo.svg';
 import './App.css';
 import {Box, Flex, Text} from "rebass";
 
+import Map from "./map"
+
+require('dotenv').config();
+
 const App: React.FC = () => {
   return (
     <Flex
@@ -17,7 +21,7 @@ const App: React.FC = () => {
                 flexDirection={'row'}
                 justifyContent={'center'}
             >
-                <Text>Header</Text>
+                <Text>API KEY</Text>
             </Flex>
 
             <Flex
@@ -30,7 +34,8 @@ const App: React.FC = () => {
                     <Text>Left</Text>
                 </Box>
                 <Box width={3/5} bg={'white'}>
-                    <Text>Center</Text>
+                    <Map/>
+
                 </Box>
                 <Box width={1/5} bg={'red'}>
                     <Text>Right</Text>
