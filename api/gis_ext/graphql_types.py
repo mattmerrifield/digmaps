@@ -1,9 +1,9 @@
 
-from graphene import NonNull, Float, InputObjectType
+from graphene import NonNull, Float, InputObjectType, ObjectType
 __all__ = ["PointFieldType"]
 
 
-class PointFieldType(InputObjectType):
+class PointFieldType(ObjectType):
     """
     An extremely simple representation of a single coordinate
     """

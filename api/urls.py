@@ -23,6 +23,6 @@ urlpatterns = [
     # Everything in this website needs to be behind the api/ path, or nginx will not
     # direct the traffic here
     url(r"^api/admin/", admin.site.urls),
-    url(r"^api/gql", GraphQLView.as_view(graphiql=True)),
-    url(r"^api/", include(location_router.urls)),
+    url(r"^api/", GraphQLView.as_view(graphiql=True)),
+    url(r"^api/rfxml", include(location_router.urls)),
 ]
