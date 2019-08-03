@@ -36,16 +36,7 @@ services:
     volumes:
       - ./ts/dist:/code/dist
       - ./ts/src:/code/src
-    command: "npm start"
-    depends_on:
-      - ts-compile
-
-  ts-compile:
-    build: "./ts"
-    volumes:
-      - ./ts/dist:/code/dist
-      - ./ts/src:/code/src
-    command: "npm run watch"
+      - ./ts/public:/code/public
 
   web:
     build: "./web"

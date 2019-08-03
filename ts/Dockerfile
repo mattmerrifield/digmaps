@@ -5,13 +5,14 @@ FROM node:8-slim
 
 RUN mkdir /code
 RUN mkdir /code/src
-RUN mkdir /dist
+RUN mkdir /code/build
+RUN mkdir /code/public
 WORKDIR /code
-RUN npm install typescript -g
 
 COPY package.json /code
-COPY src/tsconfig.json /code/src
-RUN npm install
+COPY tsconfig.json /code
+COPY yarn.lock /code
+RUN yarn install
 
 EXPOSE 3000
-CMD [ "npm", "start" ]
+CMD [ "yarn", "start" ]

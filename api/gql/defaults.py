@@ -3,6 +3,9 @@ from graphene_django_extras import LimitOffsetGraphqlPagination
 
 # Set up a default pagination class
 class DefaultPaginator(LimitOffsetGraphqlPagination):
+    """
+    Allow limit/offset pagination, and explicitly order by ID when no other default is provided.
+    """
     def __init__(self, *args, **kwargs):
         # Default ordering is by 'id'
         kwargs["ordering"] = kwargs.get("ordering", "id")

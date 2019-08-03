@@ -1,14 +1,13 @@
-import graphene
 
+from graphene import NonNull, Float, InputObjectType
 __all__ = ["PointFieldType"]
 
 
-class PointFieldType(graphene.ObjectType):
+class PointFieldType(InputObjectType):
     """
     An extremely simple representation of a single coordinate
     """
-
-    x = graphene.Float()
-    y = graphene.Float()
+    x = NonNull(Float)
+    y = NonNull(Float)
 
 
