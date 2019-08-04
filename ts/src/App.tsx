@@ -32,7 +32,7 @@ const SitesList = () => {
 };
 
 
-const client = new ApolloClient();
+const client = new ApolloClient({uri: 'http://localhost/api/'});
 
 const App: React.FC = () => {
   return (
