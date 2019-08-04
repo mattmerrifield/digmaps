@@ -11,14 +11,24 @@ const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN || '';
 //     viewport: ViewState
 // }
 
+interface NavLocation {
+    top?: number
+    bottom?: number
+    left?: number
+    right?: number
+}
+
 interface MapProps extends BoxProps {
     children?: ReactNode
     width?: TLengthStyledSystem
     height?: TLengthStyledSystem
+    navLocation?: NavLocation
 }
 
 const Map = (props: MapProps) => {
-    // A full-screen map widget
+    // A dynamically resizing, flexbox-compatible map widget!
+
+    const navLocation = props.navLocation || {bottom: 30, right: 30};
 
     const initialState = {
         viewport: {
@@ -35,16 +45,27 @@ const Map = (props: MapProps) => {
     const divRef = useRef<HTMLDivElement>(null);
 
     // Register the resize event listener with useEffect
-    // Pass in a function to execute when the component finishes mounting
-    // Return from the pass-in function another function to execute when the component unmounts
     useEffect(
+        // Pass in a function to execute when the component finishes mounting
         () => {
+            const divHeight = () => {
+                if (divRef && divRef.current) {
+                    return divRef.current.clientHeight
+                }
+            };
+
+            const divWidth = () => {
+                if (divRef && divRef.current) {
+                    return divRef.current.clientWidth
+                }
+            };
+
             const resize = () => {
                 setState(prevState => ({
                     viewport: {
                         ...prevState.viewport,
-                        height: divHeight() || state.viewport.height,
-                        width: divWidth() || state.viewport.width,
+                        height: divHeight() || initialState.viewport.height,
+                        width: divWidth() || initialState.viewport.width,
                     },
                 }));
             };
@@ -53,26 +74,18 @@ const Map = (props: MapProps) => {
             // Return from the first function argument another function, which will be called during unmount
             return () => window.removeEventListener('resize', resize);
         },
+        // Second argument is an empty list => execute first argument only after monunting
+        // not every time!
         []
     );
 
+    // Update the viewport whenever we scroll or click on a nav control
     const updateViewport = (viewport: ViewState) => {
         setState(prevState => ({
             viewport: { ...prevState.viewport, ...viewport },
         }));
     };
 
-    const divHeight = () => {
-        if (divRef && divRef.current) {
-            return divRef.current.clientHeight
-        }
-    };
-
-    const divWidth = () => {
-        if (divRef && divRef.current) {
-            return divRef.current.clientWidth
-        }
-    };
 
     return (
         <div ref={divRef}>
@@ -81,7 +94,7 @@ const Map = (props: MapProps) => {
                 mapboxApiAccessToken={MAPBOX_TOKEN}
                 onViewportChange={(v: ViewState) => updateViewport(v)}
             >
-                <div style={{ position: 'absolute', right: 30, bottom: 30 }}>
+                <div style={{ position: 'absolute', ...navLocation }}>
                    <NavigationControl onViewportChange={updateViewport} />
                 </div>
                 {props.children}

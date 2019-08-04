@@ -38,15 +38,15 @@ const App: React.FC = () => {
   return (
       <ApolloProvider client={client}>
           <Flex>
-              <Box width={8/12}> Left </Box>
-              <Box width={1/12}>
+              <Box width={1/12}> Left </Box>
+              <Box width={5/6}>
                   <Map height={1024}>
                       <Flex>
                           <Text>Welcome to Digmaps!</Text>
                       </Flex>
                   </Map>
               </Box>
-              <Box width={3/12}> Right </Box>
+              <Box width={1/12}> Right </Box>
           </Flex>
       </ApolloProvider>
   );
