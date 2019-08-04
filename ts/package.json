@@ -14,8 +14,10 @@
     "apollo-client": "^2.6.3",
     "dotenv": "^8.0.0",
     "graphql": "^14.4.2",
+    "graphql-tag": "^2.10.1",
     "react": "^16.8.6",
     "react-apollo": "^2.5.8",
+    "react-apollo-hooks": "^0.5.0",
     "react-dom": "^16.8.6",
     "react-map-gl": "^5.0.7",
     "react-scripts": "3.0.1",
@@ -29,7 +31,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "get-schema": "yarn run apollo schema:download --endpoint=http://localhost/api/ graphql-schema.json",
-    "gen-types": "yarn run apollo codegen:generate --localSchemaFile=graphql-schema.json --target=typescript --includes=src/**/*.ts --tagName=gql --addTypename --globalTypesFile=src/types/graphql-global-types.ts types"
+    "gen-types": "yarn run apollo codegen:generate --localSchemaFile=graphql-schema.json --target=typescript --includes=src/**/*.ts --tagName=gql --addTypename --globalTypesFile=src/types/graphql-global-types.ts types",
+    "codegen": "graphql-codegen --config codegen.yml"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -47,6 +50,10 @@
     ]
   },
   "devDependencies": {
-    "apollo": "^2.16.3"
+    "@graphql-codegen/cli": "^1.4.0",
+    "apollo": "^2.16.3",
+    "@graphql-codegen/typescript": "1.4.0",
+    "@graphql-codegen/typescript-operations": "1.4.0",
+    "@graphql-codegen/typescript-react-apollo": "1.4.0"
   }
 }

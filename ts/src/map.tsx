@@ -3,6 +3,9 @@ import ReactMapGL, {NavigationControl, ViewState} from 'react-map-gl';
 import {ReactNode, useEffect, useState} from "react";
 import {BoxProps, Text, Box, Flex} from "rebass";
 import {TLengthStyledSystem} from "styled-system";
+import {Query} from "react-apollo";
+import {Sites, SitesVariables} from "./queries/types/Sites";
+import siteQuery from "./queries/siteQuery";
 
 const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN || '';
 
@@ -24,6 +27,24 @@ interface MapProps extends BoxProps {
     height?: TLengthStyledSystem
     navLocation?: NavLocation
 }
+
+
+class SiteQuery extends Query<Sites, SitesVariables> {}
+
+const SitesMarkers = () => {
+    return (
+      <SiteQuery
+        query={siteQuery}
+        variables={{limit: 10}}
+      >
+        {({ data: Sites }) => (
+          <>
+          </>
+         )}
+      </SiteQuery>
+    )
+};
+
 
 const Map = (props: MapProps) => {
     // A dynamically resizing, flexbox-compatible map widget!
