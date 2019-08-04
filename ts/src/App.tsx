@@ -9,12 +9,15 @@ import ApolloClient from 'apollo-boost';
 import { Query } from 'react-apollo';
 import {Sites, SitesVariables} from "./queries/types/Sites";
 import siteQuery from "./queries/siteQuery";
+import {useSitesQuery} from "./generated/graphql";
 
 require('dotenv').config();
 
 class SiteQuery extends Query<Sites, SitesVariables> {}
 
 const SitesList = () => {
+    const {data, error, loading} = useSitesQuery();
+    const sdata = data
     return (
       <SiteQuery
         query={siteQuery}
@@ -22,6 +25,7 @@ const SitesList = () => {
       >
         {({ data }) => (
           <>
+          <Text>{sdata} {error} {loading}</Text>
            <h1>Sites</h1>
            <code>
             <pre>{JSON.stringify(data, null, 2)}</pre>
