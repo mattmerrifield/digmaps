@@ -15,11 +15,12 @@ require('dotenv').config();
 
 class SiteQuery extends Query<Sites, SitesVariables> {}
 
-const SitesList = () => {
+const SitesList = (props: any) => {
     const {data, error, loading} = useSitesQuery();
-    const sdata = data
+    const sdata = data;
     return (
       <SiteQuery
+          client={props.client}
         query={siteQuery}
         variables={{limit: 10}}
       >
@@ -52,7 +53,7 @@ const App: React.FC = () => {
               </Box>
               <Box width={1/2}>
                   <Text>Sites</Text>
-                  <SitesList/>
+                  <SitesList client={client}/>
               </Box>
           </Flex>
       </ApolloProvider>
