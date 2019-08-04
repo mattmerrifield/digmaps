@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "graphene_django",
     "gql",
     "gis_ext",
+    "corsheaders",
 ]
 
 GRAPHENE = {"SCHEMA": "gql.schema.schema"}  # Where your Graphene gql lives
@@ -62,6 +63,7 @@ GRAPHENE_DJANGO_EXTRAS = {
 }
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -74,8 +76,8 @@ MIDDLEWARE = [
 ROOT_URLCONF = "urls"
 
 CORS_ORIGIN_WHITELIST = (
-    'localhost:3000',
-    'localhost:3001',
+    'http://localhost:3000',
+    'http://localhost:3001',
 )
 
 TEMPLATES = [

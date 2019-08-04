@@ -15,3 +15,4 @@ graphene-django
 django-graphql-geojson
 django-filter>=2
 graphene-django-extras
+django-cors-headers

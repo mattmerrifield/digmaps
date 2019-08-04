@@ -32,21 +32,23 @@ const SitesList = () => {
 };
 
 
-const client = new ApolloClient({uri: 'http://localhost/api/'});
+const client = new ApolloClient();
 
 const App: React.FC = () => {
   return (
       <ApolloProvider client={client}>
           <Flex>
-              <Box width={1/12}> Left </Box>
-              <Box width={5/6}>
-                  <Map height={1024}>
-                      <Flex>
-                          <Text>Welcome to Digmaps!</Text>
-                      </Flex>
-                  </Map>
+              <Box width={1/2}>
+              <Map height={1024}>
+                  <Flex>
+                      <Text>Welcome to Digmaps!</Text>
+                  </Flex>
+              </Map>
               </Box>
-              <Box width={1/12}> Right </Box>
+              <Box width={1/2}>
+                  <Text>Sites</Text>
+                  <SitesList/>
+              </Box>
           </Flex>
       </ApolloProvider>
   );
