@@ -7,17 +7,18 @@ import { ApolloProvider } from 'react-apollo';
 import ApolloClient from 'apollo-boost';
 
 import { Query } from 'react-apollo';
-import {Sites} from "./queries/types/Sites";
+import {Sites, SitesVariables} from "./queries/types/Sites";
 import siteQuery from "./queries/siteQuery";
 
 require('dotenv').config();
 
-class SiteQuery extends Query<Sites> {}
+class SiteQuery extends Query<Sites, SitesVariables> {}
 
 const SitesList = () => {
     return (
       <SiteQuery
         query={siteQuery}
+        variables={{limit: 10}}
       >
         {({ data }) => (
           <>
