@@ -1,58 +1,53 @@
 import React from 'react';
 import './App.css';
-import {Flex, Text} from "rebass";
+import {Box, Flex, Text} from "rebass";
 
-import FullScreenMap from "./map"
+import Map from "./map"
 import { ApolloProvider } from 'react-apollo';
 import ApolloClient from 'apollo-boost';
 
-import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
+import {Sites} from "./queries/types/Sites";
+import siteQuery from "./queries/siteQuery";
 
 require('dotenv').config();
 
-const GET_SITES = gql`
-  {
-    sites {
-      id
-      modernName
-      coordinates {
-        x
-        y
-      }
-    }
-  }
-`;
+class SiteQuery extends Query<Sites> {}
 
-const Sites = ({ onDogSelected }) => (
-  <Query query={GET_SITES}>
-    {({ loading, error, data }) => {
-      if (loading) return 'Loading...';
-      if (error) return `Error! ${error.message}`;
-
-      return (
-        <select name="dog" onChange={onDogSelected}>
-          {data.dogs.map(site => (
-            <option key={site.id} value={site.modernName}>
-              {site.breed}
-            </option>
-          ))}
-        </select>
-      );
-    }}
-  </Query>
+const SitesList = () => {
+    return (
+      <SiteQuery
+        query={siteQuery}
+      >
+        {({ data }) => (
+          <>
+           <h1>Sites</h1>
+           <code>
+            <pre>{JSON.stringify(data, null, 2)}</pre>
+           </code>
+          </>
+         )}
+      </SiteQuery>
+    )
+};
 
 
-const client = new ApolloClient();
+const client = new ApolloClient({uri: 'http://localhost/api/'});
 
 const App: React.FC = () => {
   return (
       <ApolloProvider client={client}>
-          <FullScreenMap>
-              <Flex>
-                  <Text>Welcome to Digmaps!</Text>
-              </Flex>
-          </FullScreenMap>
+          <Flex>
+              <Box width={8/12}> Left </Box>
+              <Box width={1/12}>
+                  <Map height={1024}>
+                      <Flex>
+                          <Text>Welcome to Digmaps!</Text>
+                      </Flex>
+                  </Map>
+              </Box>
+              <Box width={3/12}> Right </Box>
+          </Flex>
       </ApolloProvider>
   );
 };

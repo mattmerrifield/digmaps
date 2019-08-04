@@ -31,6 +31,8 @@ services:
 
   ts:
     build: "./ts"
+    env_file:
+      - './ts/.env'
     ports:
       # Warm reloading of the project is done by using a websocket to notify the frontend
       # of file changes
