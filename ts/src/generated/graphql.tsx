@@ -36,14 +36,9 @@ export type FeatureType = {
 export type FeatureTypeSitesArgs = {
   id?: Maybe<Scalars["Float"]>;
   code?: Maybe<Scalars["String"]>;
-  code_Icontains?: Maybe<Scalars["String"]>;
-  region_Id?: Maybe<Scalars["Float"]>;
+  region?: Maybe<Scalars["ID"]>;
   region_Name?: Maybe<Scalars["String"]>;
-  region_Name_Icontains?: Maybe<Scalars["String"]>;
-  modernName_Icontains?: Maybe<Scalars["String"]>;
-  ancientName_Icontains?: Maybe<Scalars["String"]>;
-  area_Lt?: Maybe<Scalars["Float"]>;
-  area_Gt?: Maybe<Scalars["Float"]>;
+  within?: Maybe<Scalars["String"]>;
 };
 
 export type Mutation = {
@@ -77,14 +72,9 @@ export type PeriodType = {
 export type PeriodTypeSitesArgs = {
   id?: Maybe<Scalars["Float"]>;
   code?: Maybe<Scalars["String"]>;
-  code_Icontains?: Maybe<Scalars["String"]>;
-  region_Id?: Maybe<Scalars["Float"]>;
+  region?: Maybe<Scalars["ID"]>;
   region_Name?: Maybe<Scalars["String"]>;
-  region_Name_Icontains?: Maybe<Scalars["String"]>;
-  modernName_Icontains?: Maybe<Scalars["String"]>;
-  ancientName_Icontains?: Maybe<Scalars["String"]>;
-  area_Lt?: Maybe<Scalars["Float"]>;
-  area_Gt?: Maybe<Scalars["Float"]>;
+  within?: Maybe<Scalars["String"]>;
 };
 
 /** An extremely simple representation of a single coordinate */
@@ -111,14 +101,9 @@ export type Query = {
 export type QuerySitesArgs = {
   id?: Maybe<Scalars["Float"]>;
   code?: Maybe<Scalars["String"]>;
-  code_Icontains?: Maybe<Scalars["String"]>;
-  region_Id?: Maybe<Scalars["Float"]>;
+  region?: Maybe<Scalars["ID"]>;
   region_Name?: Maybe<Scalars["String"]>;
-  region_Name_Icontains?: Maybe<Scalars["String"]>;
-  modernName_Icontains?: Maybe<Scalars["String"]>;
-  ancientName_Icontains?: Maybe<Scalars["String"]>;
-  area_Lt?: Maybe<Scalars["Float"]>;
-  area_Gt?: Maybe<Scalars["Float"]>;
+  within?: Maybe<Scalars["String"]>;
   limit?: Maybe<Scalars["Int"]>;
   offset?: Maybe<Scalars["Int"]>;
   ordering?: Maybe<Scalars["String"]>;
@@ -173,14 +158,9 @@ export type RegionType = {
 export type RegionTypeSiteArgs = {
   id?: Maybe<Scalars["Float"]>;
   code?: Maybe<Scalars["String"]>;
-  code_Icontains?: Maybe<Scalars["String"]>;
-  region_Id?: Maybe<Scalars["Float"]>;
+  region?: Maybe<Scalars["ID"]>;
   region_Name?: Maybe<Scalars["String"]>;
-  region_Name_Icontains?: Maybe<Scalars["String"]>;
-  modernName_Icontains?: Maybe<Scalars["String"]>;
-  ancientName_Icontains?: Maybe<Scalars["String"]>;
-  area_Lt?: Maybe<Scalars["Float"]>;
-  area_Gt?: Maybe<Scalars["Float"]>;
+  within?: Maybe<Scalars["String"]>;
 };
 
 /** An enumeration. */
@@ -246,11 +226,12 @@ export type SiteType = {
   surveyType?: Maybe<SiteSurveyTypeEnum>;
 };
 export type SitesQueryVariables = {
-  limit: Scalars["Int"];
+  limit?: Maybe<Scalars["Int"]>;
+  within?: Maybe<Scalars["String"]>;
 };
 
 export type SitesQuery = { __typename?: "Query" } & {
-  sites:
+  sites: Maybe<
     Array<
       Maybe<
         { __typename?: "SiteType" } & Pick<
@@ -263,13 +244,13 @@ export type SitesQuery = { __typename?: "Query" } & {
             >;
           }
       >
-
+    >
   >;
 };
 
 export const SitesDocument = gql`
-  query Sites($limit: Int!) {
-    sites(limit: $limit) {
+  query Sites($limit: Int, $within: String) {
+    sites(limit: $limit, within: $within) {
       id
       modernName
       ancientName
@@ -283,8 +264,7 @@ export const SitesDocument = gql`
 export type SitesComponentProps = Omit<
   ReactApollo.QueryProps<SitesQuery, SitesQueryVariables>,
   "query"
-> &
-  ({ variables: SitesQueryVariables; skip?: false } | { skip: true });
+>;
 
 export const SitesComponent = (props: SitesComponentProps) => (
   <ReactApollo.Query<SitesQuery, SitesQueryVariables>

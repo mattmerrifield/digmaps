@@ -1,23 +1,51 @@
+from django.contrib.gis.forms.fields import GeometryField
+from django.contrib.gis.geos import GEOSGeometry
+from django.forms import CharField
+from django_filters.rest_framework import FilterSet, BooleanFilter, CharFilter, Filter
 from graphene_django.rest_framework.mutation import SerializerMutation
 from graphene_django_extras import DjangoObjectType, DjangoFilterPaginateListField, DjangoSerializerMutation
+from graphql_geojson import Geometry
+
 from locations import models
 import graphene
 
 from locations.serializers import SiteSerializer
 
 
+class GeometryFilter(Filter):
+    field_class = CharField
+
+
+class SiteFilterset(FilterSet):
+    """Filter for Books by if books are published or not"""
+    within = GeometryFilter(field_name='coordinates', method='filter_within')
+
+    def filter_within(self, queryset, name, value):
+        # construct the full lookup expression.
+        rectangle = GEOSGeometry(f'POLYGON (({value}))')
+        lookup = '{}__within'.format(name)
+        return queryset.filter(**{lookup: rectangle})
+
+    class Meta:
+        model = models.Site
+        filter_overrides = {
+            models.PointField: {
+                'filter_class': GeometryFilter,
+                'extra': lambda f: {
+                    'lookup_expr': 'within',
+                },
+            },
+        }
+        fields = [
+            'id', 'code', 'region', 'region__name', 'within'
+        ]
+
+
 class SiteType(DjangoObjectType):
     class Meta:
         model = models.Site
-        filter_fields = {
-            "id": ["exact"],
-            "code": ["exact", "icontains"],
-            "region__id": ["exact"],
-            "region__name": ["exact", "icontains"],
-            "modern_name": ["icontains"],
-            "ancient_name": ["icontains"],
-            "area": ["lt", "gt"],
-        }
+        filterset_class = SiteFilterset
+
 
 
 class RegionType(DjangoObjectType):
