@@ -5,36 +5,20 @@ import {Box, Flex, Text} from "rebass";
 import Map from "./map"
 import { ApolloProvider } from 'react-apollo';
 import ApolloClient from 'apollo-boost';
+import { ApolloProvider as ApolloHooksProvider } from 'react-apollo-hooks';
 
 import { Query } from 'react-apollo';
 import {Sites, SitesVariables} from "./queries/types/Sites";
 import siteQuery from "./queries/siteQuery";
-import {useSitesQuery} from "./generated/graphql";
+import {SitesQueryVariables, useSitesQuery} from "./generated/graphql";
 
 require('dotenv').config();
 
 class SiteQuery extends Query<Sites, SitesVariables> {}
 
 const SitesList = (props: any) => {
-    const {data, error, loading} = useSitesQuery();
-    const sdata = data;
-    return (
-      <SiteQuery
-          client={props.client}
-        query={siteQuery}
-        variables={{limit: 10}}
-      >
-        {({ data }) => (
-          <>
-          <Text>{sdata} {error} {loading}</Text>
-           <h1>Sites</h1>
-           <code>
-            <pre>{JSON.stringify(data, null, 2)}</pre>
-           </code>
-          </>
-         )}
-      </SiteQuery>
-    )
+    const q = useSitesQuery({variables:{limit: 10}});
+    return <pre>{JSON.stringify(q, null, 2)}</pre>
 };
 
 
@@ -43,19 +27,21 @@ const client = new ApolloClient({uri: 'http://localhost/api/'});
 const App: React.FC = () => {
   return (
       <ApolloProvider client={client}>
-          <Flex>
-              <Box width={1/2}>
-              <Map height={1024}>
-                  <Flex>
-                      <Text>Welcome to Digmaps!</Text>
-                  </Flex>
-              </Map>
-              </Box>
-              <Box width={1/2}>
-                  <Text>Sites</Text>
-                  <SitesList client={client}/>
-              </Box>
-          </Flex>
+          <ApolloHooksProvider client={client}>
+              <Flex>
+                  <Box width={1/2}>
+                  <Map height={1024}>
+                      <Flex>
+                          <Text>Welcome to Digmaps!</Text>
+                      </Flex>
+                  </Map>
+                  </Box>
+                  <Box width={1/2}>
+                      <Text>Sites</Text>
+                      <SitesList/>
+                  </Box>
+              </Flex>
+          </ApolloHooksProvider>
       </ApolloProvider>
   );
 };
