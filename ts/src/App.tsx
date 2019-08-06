@@ -7,14 +7,10 @@ import { ApolloProvider } from 'react-apollo';
 import ApolloClient from 'apollo-boost';
 import { ApolloProvider as ApolloHooksProvider } from 'react-apollo-hooks';
 
-import { Query } from 'react-apollo';
-import {Sites, SitesVariables} from "./queries/types/Sites";
-import siteQuery from "./queries/siteQuery";
-import {SitesQueryVariables, useSitesQuery} from "./generated/graphql";
+import {useSitesQuery} from "./generated/graphql";
 
 require('dotenv').config();
 
-class SiteQuery extends Query<Sites, SitesVariables> {}
 
 const SitesList = (props: any) => {
     const q = useSitesQuery({variables:{limit: 10}});
