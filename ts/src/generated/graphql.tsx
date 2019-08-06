@@ -250,7 +250,7 @@ export type SitesQueryVariables = {
 };
 
 export type SitesQuery = { __typename?: "Query" } & {
-  sites: Maybe<
+  sites:
     Array<
       Maybe<
         { __typename?: "SiteType" } & Pick<
@@ -263,7 +263,7 @@ export type SitesQuery = { __typename?: "Query" } & {
             >;
           }
       >
-    >
+
   >;
 };
 

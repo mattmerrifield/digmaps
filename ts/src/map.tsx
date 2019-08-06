@@ -1,5 +1,5 @@
 import React, {useRef} from 'react';
-import ReactMapGL, {NavigationControl, ViewState} from 'react-map-gl';
+import ReactMapGL, {Marker, NavigationControl, ViewState} from 'react-map-gl';
 import {ReactNode, useEffect, useState} from "react";
 import {BoxProps, Text, Box, Flex} from "rebass";
 import {TLengthStyledSystem} from "styled-system";
@@ -118,6 +118,9 @@ const Map = (props: MapProps) => {
                 <div style={{ position: 'absolute', ...navLocation }}>
                    <NavigationControl onViewportChange={updateViewport} />
                 </div>
+                <Marker  latitude={31.7683} longitude={35.2137}>
+                    <div>You are here</div>
+                </Marker>
                 {props.children}
             </ReactMapGL>
         </div>
