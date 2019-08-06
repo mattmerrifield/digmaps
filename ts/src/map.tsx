@@ -3,9 +3,9 @@ import ReactMapGL, {Marker, NavigationControl, ViewState} from 'react-map-gl';
 import {ReactNode, useEffect, useState} from "react";
 import {BoxProps, Text, Box, Flex} from "rebass";
 import {TLengthStyledSystem} from "styled-system";
-import {Query} from "react-apollo";
-import {Sites, SitesVariables} from "./queries/types/Sites";
-import siteQuery from "./queries/siteQuery";
+import InteractiveMap from "react-map-gl";
+import {FaMapMarker} from "react-icons/fa";
+import {useSitesQuery} from "./generated/graphql";
 
 const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN || '';
 
@@ -13,6 +13,64 @@ const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN || '';
 // interface State {
 //     viewport: ViewState
 // }
+
+interface SiteMarkerProps{
+ site: {
+    modernName?: string
+    coordinates: {
+        x: number
+        y: number
+    }
+}}
+
+const SiteMarker = (props: SiteMarkerProps) => {
+
+    const [name, setName] = useState(<></>);
+
+    const showName = () => setName(<Text>{props.site.modernName}</Text>);
+    const hideName = () => setName(<></>);
+
+    return (
+        <Marker latitude={props.site.coordinates.y} longitude={props.site.coordinates.x}>
+            <FaMapMarker onMouseEnter={showName} onMouseLeave={hideName}/>
+            {name}
+        </Marker>
+    )
+
+};
+
+interface SitesMarkerProps {
+    x1: number
+    y1: number
+    x2: number
+    y2: number
+
+}
+
+const SitesMarkers = (props: SitesMarkerProps) => {
+
+    const {x1, y1, x2, y2 } = props;
+    const rect = `(${x1}, ${y1}), (${x2}, ${y2}`;
+    const {data, loading, error} = useSitesQuery({variables: {rect: rect}});
+
+    if (data && data.sites) {
+        return <>{data.sites.map(
+            (site, i) => {
+                if (site && site.coordinates) {
+                    console.log(site);
+                    return <SiteMarker key={i} site={site}/>
+                }
+            }
+        ).filter(
+            (element, i) => element
+        )}</>
+    }
+    else {
+        return <></>
+    }
+};
+
+
 
 interface NavLocation {
     top?: number
@@ -28,22 +86,6 @@ interface MapProps extends BoxProps {
     navLocation?: NavLocation
 }
 
-
-class SiteQuery extends Query<Sites, SitesVariables> {}
-
-const SitesMarkers = () => {
-    return (
-      <SiteQuery
-        query={siteQuery}
-        variables={{limit: 10}}
-      >
-        {({ data: Sites }) => (
-          <>
-          </>
-         )}
-      </SiteQuery>
-    )
-};
 
 
 const Map = (props: MapProps) => {
@@ -64,37 +106,40 @@ const Map = (props: MapProps) => {
     type State = typeof initialState
     const [state, setState] = useState<State>(initialState);
     const divRef = useRef<HTMLDivElement>(null);
+    const mapRef = useRef<InteractiveMap>(null);
 
-    // Register the resize event listener with useEffect
+    // Pass in a function to execute when the component finishes mounting
+    const componentDidMount = () => {
+        const divHeight = () => {
+            if (divRef && divRef.current) {
+                return divRef.current.clientHeight
+            }
+        };
+
+        const divWidth = () => {
+            if (divRef && divRef.current) {
+                return divRef.current.clientWidth
+            }
+        };
+
+        const resize = () => {
+            setState(prevState => ({
+                viewport: {
+                    ...prevState.viewport,
+                    height: divHeight() || initialState.viewport.height,
+                    width: divWidth() || initialState.viewport.width,
+                },
+            }));
+        };
+        window.addEventListener('resize', resize);
+        resize();
+        // Return from the first function argument another function, which will be called during unmount
+        return () => window.removeEventListener('resize', resize);
+    };
+
     useEffect(
-        // Pass in a function to execute when the component finishes mounting
-        () => {
-            const divHeight = () => {
-                if (divRef && divRef.current) {
-                    return divRef.current.clientHeight
-                }
-            };
-
-            const divWidth = () => {
-                if (divRef && divRef.current) {
-                    return divRef.current.clientWidth
-                }
-            };
-
-            const resize = () => {
-                setState(prevState => ({
-                    viewport: {
-                        ...prevState.viewport,
-                        height: divHeight() || initialState.viewport.height,
-                        width: divWidth() || initialState.viewport.width,
-                    },
-                }));
-            };
-            window.addEventListener('resize', resize);
-            resize();
-            // Return from the first function argument another function, which will be called during unmount
-            return () => window.removeEventListener('resize', resize);
-        },
+        // Register the resize event listener with useEffect
+        componentDidMount,
         // Second argument is an empty list => execute first argument only after monunting
         // not every time!
         []
@@ -107,6 +152,18 @@ const Map = (props: MapProps) => {
         }));
     };
 
+    const getBounds = () => {
+        if (mapRef.current) {
+            const bounds = mapRef.current.getMap().getBounds();
+            return {x1: bounds.getEast(), y1: bounds.getNorth(), x2: bounds.getSouth(), y2: bounds.getWest()};
+        }
+        else
+            {
+                return {x1: 0, y1: 0, x2: 0, y2: 0}
+
+            }
+    };
+
 
     return (
         <div ref={divRef}>
@@ -114,12 +171,14 @@ const Map = (props: MapProps) => {
                 {...state.viewport}
                 mapboxApiAccessToken={MAPBOX_TOKEN}
                 onViewportChange={(v: ViewState) => updateViewport(v)}
+                ref={mapRef}
             >
                 <div style={{ position: 'absolute', ...navLocation }}>
                    <NavigationControl onViewportChange={updateViewport} />
                 </div>
                 <Marker  latitude={31.7683} longitude={35.2137}>
                     <div>You are here</div>
+                    <SitesMarkers {...getBounds()}/>
                 </Marker>
                 {props.children}
             </ReactMapGL>

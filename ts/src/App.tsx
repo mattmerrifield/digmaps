@@ -8,7 +8,7 @@ import ApolloClient from 'apollo-boost';
 import { ApolloProvider as ApolloHooksProvider } from 'react-apollo-hooks';
 import {FaMapMarker} from "react-icons/fa";
 
-import {SiteType, useSitesQuery} from "./generated/graphql";
+import {useSitesQuery} from "./generated/graphql";
 import {Marker} from "react-map-gl";
 
 
@@ -39,14 +39,25 @@ const SiteMarker = (props: SiteMarkerProps) => {
 
 };
 
-const SitesList = () => {
-    const {data, loading, error} = useSitesQuery({variables: {limit: 100}});
+interface SitesMarkerProps {
+    x1: number
+    y1: number
+    x2: number
+    y2: number
+
+}
+
+const SitesMarkers = (props: SitesMarkerProps) => {
+
+    const {x1, y1, x2, y2 } = props;
+    const rect = `(${x1}, ${y1}), (${x2}, ${y2}`;
+    const {data, loading, error} = useSitesQuery({variables: {rect: rect}});
 
     if (data && data.sites) {
         return <>{data.sites.map(
             (site, i) => {
                 if (site && site.coordinates) {
-                    console.log(site)
+                    console.log(site);
                     return <SiteMarker key={i} site={site}/>
                 }
             }
@@ -72,7 +83,6 @@ const App: React.FC = () => {
                       <Flex>
                           <Text>Welcome to Digmaps!</Text>
                       </Flex>
-                      <SitesList/>
                   </Map>
                   </Box>
                   <Box width={1/2}>

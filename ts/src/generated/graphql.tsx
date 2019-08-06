@@ -39,6 +39,7 @@ export type FeatureTypeSitesArgs = {
   region?: Maybe<Scalars["ID"]>;
   region_Name?: Maybe<Scalars["String"]>;
   within?: Maybe<Scalars["String"]>;
+  rect?: Maybe<Scalars["String"]>;
 };
 
 export type Mutation = {
@@ -75,6 +76,7 @@ export type PeriodTypeSitesArgs = {
   region?: Maybe<Scalars["ID"]>;
   region_Name?: Maybe<Scalars["String"]>;
   within?: Maybe<Scalars["String"]>;
+  rect?: Maybe<Scalars["String"]>;
 };
 
 /** An extremely simple representation of a single coordinate */
@@ -104,6 +106,7 @@ export type QuerySitesArgs = {
   region?: Maybe<Scalars["ID"]>;
   region_Name?: Maybe<Scalars["String"]>;
   within?: Maybe<Scalars["String"]>;
+  rect?: Maybe<Scalars["String"]>;
   limit?: Maybe<Scalars["Int"]>;
   offset?: Maybe<Scalars["Int"]>;
   ordering?: Maybe<Scalars["String"]>;
@@ -161,6 +164,7 @@ export type RegionTypeSiteArgs = {
   region?: Maybe<Scalars["ID"]>;
   region_Name?: Maybe<Scalars["String"]>;
   within?: Maybe<Scalars["String"]>;
+  rect?: Maybe<Scalars["String"]>;
 };
 
 /** An enumeration. */
@@ -228,6 +232,7 @@ export type SiteType = {
 export type SitesQueryVariables = {
   limit?: Maybe<Scalars["Int"]>;
   within?: Maybe<Scalars["String"]>;
+  rect?: Maybe<Scalars["String"]>;
 };
 
 export type SitesQuery = { __typename?: "Query" } & {
@@ -249,8 +254,8 @@ export type SitesQuery = { __typename?: "Query" } & {
 };
 
 export const SitesDocument = gql`
-  query Sites($limit: Int, $within: String) {
-    sites(limit: $limit, within: $within) {
+  query Sites($limit: Int, $within: String, $rect: String) {
+    sites(limit: $limit, within: $within, rect: $rect) {
       id
       modernName
       ancientName

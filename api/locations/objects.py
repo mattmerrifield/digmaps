@@ -19,12 +19,21 @@ class GeometryFilter(Filter):
 class SiteFilterset(FilterSet):
     """Filter for Books by if books are published or not"""
     within = GeometryFilter(field_name='coordinates', method='filter_within')
+    rect = GeometryFilter(field_name='coordinates', method='filter_rect')
 
-    def filter_within(self, queryset, name, value):
+    def filter_rect(self, queryset, name, value):
+        # Shorthand for a WKT for a rectangle
+        x1, y1, x2, y2 = value.replace("(", "").replace(")", "").split(",")
         # construct the full lookup expression.
-        rectangle = GEOSGeometry(f'POLYGON (({value}))')
+        rectangle = GEOSGeometry(f'POLYGON (({x1} {y1}, {x1} {y2}, {x2} {y2}, {x2} {y1}, {x1} {y1}))')
         lookup = '{}__within'.format(name)
         return queryset.filter(**{lookup: rectangle})
+
+    def filter_within(self, queryset, name, value):
+        # construct the full lookup expression. from a WKT string
+        shape = GEOSGeometry(value)
+        lookup = '{}__within'.format(name)
+        return queryset.filter(**{lookup: shape})
 
     class Meta:
         model = models.Site
@@ -32,12 +41,12 @@ class SiteFilterset(FilterSet):
             models.PointField: {
                 'filter_class': GeometryFilter,
                 'extra': lambda f: {
-                    'lookup_expr': 'within',
+                    'lookup_expr': 'rect',
                 },
             },
         }
         fields = [
-            'id', 'code', 'region', 'region__name', 'within'
+            'id', 'code', 'region', 'region__name', 'within', 'rect'
         ]
 
 
