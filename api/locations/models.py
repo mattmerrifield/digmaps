@@ -114,8 +114,7 @@ class SiteFeature(models.Model):
 
     site = models.ForeignKey("Site", on_delete=models.CASCADE)
     feature = models.ForeignKey("Feature", on_delete=models.CASCADE)
-    evidence = models.CharField(
-        max_length=20,
+    evidence = models.PositiveSmallIntegerField(
         default=Evidence.TYPICAL,
         choices=Evidence.CHOICES,
         help_text="How clear is the evidence for the site to have this feature?",
