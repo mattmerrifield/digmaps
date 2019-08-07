@@ -90,7 +90,7 @@ export type PointFieldType = {
 export type Query = {
   __typename?: "Query";
   /** Site list */
-  sites?: Maybe<Array<Maybe<SiteType>>>;
+  sites: Array<SiteType>;
   /** Region list */
   regions?: Maybe<Array<Maybe<RegionType>>>;
   /** SiteFeature list */
@@ -194,40 +194,25 @@ export type SiteFeatureType = {
   site?: Maybe<SiteType>;
 };
 
-/** An enumeration. */
-export enum SiteSurveyTypeEnum {
-  /** Surface Survey */
-  Surface = "SURFACE",
-  /** Excavation */
-  Excavation = "EXCAVATION"
-}
-
 export type SiteType = {
   __typename?: "SiteType";
-  /** Name used by ancient peoples */
-  ancientName?: Maybe<Scalars["String"]>;
-  /** Area in Hectares. Null is 'unknown' */
-  area?: Maybe<Scalars["Float"]>;
-  /** Short, meaningful ID for the site. Assigned by the admin */
-  code?: Maybe<Scalars["String"]>;
+  ancientName: Scalars["String"];
+  area: Scalars["Float"];
+  code: Scalars["String"];
   coordinates: PointFieldType;
   features?: Maybe<Array<Maybe<FeatureType>>>;
-  /** Django object unique identification field */
   id: Scalars["ID"];
-  /** Name used by modern peoples */
-  modernName?: Maybe<Scalars["String"]>;
+  modernName: Scalars["String"];
   /** notes */
   notes?: Maybe<Scalars["String"]>;
   /** value of the original coordinate system of record, if it was easting/northing. Do not use directly */
   notesEastingNorthing?: Maybe<Scalars["String"]>;
   periods?: Maybe<Array<Maybe<PeriodType>>>;
-  /** population */
-  population?: Maybe<Scalars["Float"]>;
+  population: Scalars["Float"];
   /** region */
   region?: Maybe<RegionType>;
   sitefeature?: Maybe<Array<Maybe<SiteFeatureType>>>;
-  /** survey type */
-  surveyType?: Maybe<SiteSurveyTypeEnum>;
+  surveyType: Scalars["String"];
 };
 export type SitesQueryVariables = {
   limit?: Maybe<Scalars["Int"]>;
@@ -236,20 +221,16 @@ export type SitesQueryVariables = {
 };
 
 export type SitesQuery = { __typename?: "Query" } & {
-  sites: Maybe<
-    Array<
-      Maybe<
-        { __typename?: "SiteType" } & Pick<
-          SiteType,
-          "id" | "modernName" | "ancientName"
-        > & {
-            coordinates: { __typename?: "PointFieldType" } & Pick<
-              PointFieldType,
-              "x" | "y"
-            >;
-          }
-      >
-    >
+  sites: Array<
+    { __typename?: "SiteType" } & Pick<
+      SiteType,
+      "id" | "modernName" | "ancientName"
+    > & {
+        coordinates: { __typename?: "PointFieldType" } & Pick<
+          PointFieldType,
+          "x" | "y"
+        >;
+      }
   >;
 };
 

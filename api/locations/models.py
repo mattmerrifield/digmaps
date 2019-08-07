@@ -29,24 +29,29 @@ class Site(models.Model):
     code = models.CharField(
         max_length=40,
         help_text="Short, meaningful ID for the site. Assigned by the admin",
+        null=False,
     )
     modern_name = models.CharField(
-        max_length=50, blank=True, help_text="Name used by modern peoples"
+        max_length=50, blank=True, help_text="Name used by modern peoples",
+        null=False, default='',
     )
     ancient_name = models.CharField(
-        max_length=50, blank=True, help_text="Name used by ancient peoples"
+        max_length=50, blank=True, help_text="Name used by ancient peoples",
+        null=False, default='',
     )
-    coordinates = PointField()
+    coordinates = PointField(null=False, blank=False)
     area = models.FloatField(
         null=True, blank=True, help_text="Area in Hectares. Null is 'unknown'"
     )
     population = models.FloatField(null=True, blank=True)
     survey_type = models.CharField(
+        null=False,
         blank=True, default="", choices=SURVEY_CHOICES, max_length=25
     )
-    notes = models.TextField(blank=True, default="")
+    notes = models.TextField(blank=True, default="", null=False)
     notes_easting_northing = models.TextField(
         blank=True,
+        null=False,
         default="",
         help_text="value of the original coordinate system of record, if it was easting/northing. Do not use directly",
     )

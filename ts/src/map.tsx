@@ -56,10 +56,7 @@ const SitesMarkers = (props: SitesMarkerProps) => {
     if (data && data.sites) {
         return <>{data.sites.map(
             (site, i) => {
-                if (site && site.coordinates) {
-                    console.log(site);
-                    return <SiteMarker key={i} site={site}/>
-                }
+                return <SiteMarker key={i} site={site}/>
             }
         ).filter(
             (element, i) => element
@@ -176,10 +173,7 @@ const Map = (props: MapProps) => {
                 <div style={{ position: 'absolute', ...navLocation }}>
                    <NavigationControl onViewportChange={updateViewport} />
                 </div>
-                <Marker  latitude={31.7683} longitude={35.2137}>
-                    <div>You are here</div>
-                    <SitesMarkers {...getBounds()}/>
-                </Marker>
+                <SitesMarkers {...getBounds()}/>
                 {props.children}
             </ReactMapGL>
         </div>

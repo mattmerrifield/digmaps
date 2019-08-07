@@ -1,10 +1,13 @@
-from django.contrib.gis.forms.fields import GeometryField
 from django.contrib.gis.geos import GEOSGeometry
 from django.forms import CharField
-from django_filters.rest_framework import FilterSet, BooleanFilter, CharFilter, Filter
-from graphene_django.rest_framework.mutation import SerializerMutation
+from django_filters.rest_framework import FilterSet, Filter
+from graphene import Argument, ID
+from graphene_django.filter.utils import get_filtering_args_from_filterset
 from graphene_django_extras import DjangoObjectType, DjangoFilterPaginateListField, DjangoSerializerMutation
-from graphql_geojson import Geometry
+import graphene as g
+from graphene_django_extras.filters.filter import get_filterset_class
+from graphene_django_extras.paginations.pagination import BaseDjangoGraphqlPagination
+from graphene_django_extras.settings import graphql_api_settings
 
 from locations import models
 import graphene
@@ -51,6 +54,15 @@ class SiteFilterset(FilterSet):
 
 
 class SiteType(DjangoObjectType):
+
+    id = g.NonNull(g.ID)
+    code = g.NonNull(g.String)
+    modern_name = g.NonNull(g.String)
+    ancient_name = g.NonNull(g.String)
+    area = g.NonNull(g.Float)
+    population = g.NonNull(g.Float)
+    survey_type = g.NonNull(g.String)
+
     class Meta:
         model = models.Site
         filterset_class = SiteFilterset
@@ -82,11 +94,55 @@ class SiteFeatureType(DjangoObjectType):
         model = models.SiteFeature
 
 
+
+class ListFieldHowItShouldHaveBeenAllAlong(DjangoFilterPaginateListField):
+
+    def __init__(self, _type, pagination=None, fields=None, extra_filter_meta=None,
+                 filterset_class=None, *args, **kwargs):
+
+        _fields = _type._meta.filter_fields
+        _model = _type._meta.model
+
+        self.fields = fields or _fields
+        meta = dict(model=_model, fields=self.fields)
+        if extra_filter_meta:
+            meta.update(extra_filter_meta)
+
+        filterset_class = filterset_class or _type._meta.filterset_class
+        self.filterset_class = get_filterset_class(filterset_class, **meta)
+        self.filtering_args = get_filtering_args_from_filterset(self.filterset_class, _type)
+        kwargs.setdefault('args', {})
+        kwargs['args'].update(self.filtering_args)
+
+        if 'id' not in kwargs['args'].keys():
+            self.filtering_args.update({'id': Argument(ID, description='Django object unique identification field')})
+            kwargs['args'].update({'id': Argument(ID, description='Django object unique identification field')})
+
+        pagination = pagination or graphql_api_settings.DEFAULT_PAGINATION_CLASS()
+
+        if pagination is not None:
+            assert isinstance(pagination, BaseDjangoGraphqlPagination), (
+                'You need to pass a valid DjangoGraphqlPagination in DjangoFilterPaginateListField, received "{}".'
+            ).format(pagination)
+
+            pagination_kwargs = pagination.to_graphql_fields()
+
+            self.pagination = pagination
+            kwargs.update(**pagination_kwargs)
+
+        if not kwargs.get('description', None):
+            kwargs['description'] = '{} list'.format(_type._meta.model.__name__)
+
+        # Intention super skip. Ew
+        super(DjangoFilterPaginateListField, self).__init__(g.NonNull(g.List(g.NonNull(_type))), *args, **kwargs)
+
+
+
 class Query(graphene.ObjectType):
     """
     Start a top-level from one of the major models.
     """
-    sites = DjangoFilterPaginateListField(SiteType)
+    sites = ListFieldHowItShouldHaveBeenAllAlong(SiteType)
     regions = DjangoFilterPaginateListField(RegionType)
     site_features = DjangoFilterPaginateListField(SiteFeatureType)
     features = DjangoFilterPaginateListField(FeatureType)
