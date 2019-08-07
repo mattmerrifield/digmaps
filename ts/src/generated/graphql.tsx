@@ -170,15 +170,15 @@ export type RegionTypeSiteArgs = {
 /** An enumeration. */
 export enum SiteFeatureEvidenceEnum {
   /** Very clear evidence */
-  E100 = "E100",
+  A_100 = "A_100",
   /** Clear evidence */
-  E50 = "E50",
+  A_75 = "A_75",
   /** Typical evidence */
-  E0 = "E0",
+  A_50 = "A_50",
   /** Unclear evidence */
-  E_50 = "E_50",
+  A_25 = "A_25",
   /** Very unclear evidence */
-  E_100 = "E_100"
+  A_0 = "A_0"
 }
 
 export type SiteFeatureType = {

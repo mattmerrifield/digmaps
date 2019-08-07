@@ -4,11 +4,11 @@ class Evidence:
     contains evidence for a certain tag.
     """
 
-    VERY_CLEAR = "E100"
-    CLEAR = "E50"
-    TYPICAL = "E0"
-    UNCLEAR = "E-50"
-    VERY_UNCLEAR = "E-100"
+    VERY_CLEAR = 100
+    CLEAR = 75
+    TYPICAL = 50
+    UNCLEAR = 25
+    VERY_UNCLEAR = 0
 
     CHOICES = (
         (VERY_CLEAR, "Very clear evidence"),

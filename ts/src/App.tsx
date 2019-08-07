@@ -78,15 +78,12 @@ const App: React.FC = () => {
       <ApolloProvider client={client}>
           <ApolloHooksProvider client={client}>
               <Flex>
-                  <Box width={1/2}>
-                  <Map height={1024}>
-                      <Flex>
-                          <Text>Welcome to Digmaps!</Text>
-                      </Flex>
-                  </Map>
-                  </Box>
-                  <Box width={1/2}>
-                      <Text>Sites</Text>
+                  <Box width={1}>
+                      <Map height={1024}>
+                          <Flex>
+                              <Text>Welcome to Digmaps!</Text>
+                          </Flex>
+                      </Map>
                   </Box>
               </Flex>
           </ApolloHooksProvider>

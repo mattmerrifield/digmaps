@@ -51,7 +51,7 @@ const SitesMarkers = (props: SitesMarkerProps) => {
 
     const {x1, y1, x2, y2 } = props;
     const rect = `(${x1}, ${y1}), (${x2}, ${y2}`;
-    const {data, loading, error} = useSitesQuery({variables: {rect: rect}});
+    const {data, loading, error} = useSitesQuery({variables: {rect: rect, limit: 10000}});
 
     if (data && data.sites) {
         return <>{data.sites.map(
@@ -155,7 +155,7 @@ const Map = (props: MapProps) => {
     const getBounds = () => {
         if (mapRef.current) {
             const bounds = mapRef.current.getMap().getBounds();
-            return {x1: bounds.getEast(), y1: bounds.getNorth(), x2: bounds.getSouth(), y2: bounds.getWest()};
+            return {x1: bounds.getEast(), y1: bounds.getNorth(), x2: bounds.getWest(), y2: bounds.getSouth()};
         }
         else
             {
