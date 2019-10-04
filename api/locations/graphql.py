@@ -20,7 +20,9 @@ class GeometryFilter(Filter):
 
 
 class SiteFilterset(FilterSet):
-    """Filter for Books by if books are published or not"""
+    """
+    Filter for Sites based on WKT geometry
+    """
     within = GeometryFilter(field_name='coordinates', method='filter_within')
     rect = GeometryFilter(field_name='coordinates', method='filter_rect')
 
@@ -54,7 +56,7 @@ class SiteFilterset(FilterSet):
 
 
 class SiteType(DjangoObjectType):
-
+    # We have to (unfortunately) explicitly list out field types for the non-null fields
     id = g.NonNull(g.ID)
     code = g.NonNull(g.String)
     modern_name = g.NonNull(g.String)
@@ -68,8 +70,10 @@ class SiteType(DjangoObjectType):
         filterset_class = SiteFilterset
 
 
-
 class RegionType(DjangoObjectType):
+    name = g.NonNull(g.String)
+    description = g.NonNull(g.String)
+
     class Meta:
         model = models.Region
         filter_fields = {
@@ -77,6 +81,7 @@ class RegionType(DjangoObjectType):
             "name": ["exact", "icontains"],
             "description": ["icontains"],
         }
+
 
 
 class FeatureType(DjangoObjectType):
@@ -143,9 +148,9 @@ class Query(graphene.ObjectType):
     Start a top-level from one of the major models.
     """
     sites = ListFieldHowItShouldHaveBeenAllAlong(SiteType)
-    regions = DjangoFilterPaginateListField(RegionType)
-    site_features = DjangoFilterPaginateListField(SiteFeatureType)
-    features = DjangoFilterPaginateListField(FeatureType)
+    regions = ListFieldHowItShouldHaveBeenAllAlong(RegionType)
+    site_features = ListFieldHowItShouldHaveBeenAllAlong(SiteFeatureType)
+    features = ListFieldHowItShouldHaveBeenAllAlong(FeatureType)
 
 
 class SiteSerializerMutation(DjangoSerializerMutation):

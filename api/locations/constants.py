@@ -1,7 +1,22 @@
-class Evidence:
+
+import enum
+
+
+class ChoiceEnum(enum.Enum):
+    @classmethod
+    def choices(cls):
+        """
+        Choices for a django model
+        """
+        return [(tag.value, tag.name.replace("_", " ").title()) for tag in cls]
+
+
+class Evidence(enum.IntEnum, ChoiceEnum):
     """
     Constants to quantitatively describe how certain we are that a site
     contains evidence for a certain tag.
+
+    Internally represented as integers from a scale of 0-100, so they sort.
     """
 
     VERY_CLEAR = 100
@@ -10,10 +25,19 @@ class Evidence:
     UNCLEAR = 25
     VERY_UNCLEAR = 0
 
-    CHOICES = (
-        (VERY_CLEAR, "Very clear evidence"),
-        (CLEAR, "Clear evidence"),
-        (TYPICAL, "Typical evidence"),
-        (UNCLEAR, "Unclear evidence"),
-        (VERY_UNCLEAR, "Very unclear evidence"),
-    )
+
+class BurialTypes(ChoiceEnum):
+    """
+    Types of burial hardware
+    """
+    TOMB = "tomb"
+    CARIN = "carin"
+    CEMETARY = "cemetary"
+
+
+class Survey(ChoiceEnum):
+    """
+    Types of archaeological survey. Looking around on the ground, vs. digging in it
+    """
+    SURFACE_SURVEY = 'surface'
+    EXCAVATION = 'excavation'

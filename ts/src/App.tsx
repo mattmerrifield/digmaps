@@ -47,7 +47,7 @@ interface SitesMarkerProps {
 
 }
 
-const SitesMarkers = (props: SitesMarkerProps) => {
+const SiteMarkers = (props: SitesMarkerProps) => {
 
     const {x1, y1, x2, y2 } = props;
     const rect = `(${x1}, ${y1}), (${x2}, ${y2}`;

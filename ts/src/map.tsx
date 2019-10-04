@@ -23,7 +23,7 @@ interface SiteMarkerProps{
     }
 }}
 
-const SiteMarker = (props: SiteMarkerProps) => {
+const SiteMarker = (props: SiteMarkerProps): React.ReactNode => {
 
     const [name, setName] = useState(<></>);
 

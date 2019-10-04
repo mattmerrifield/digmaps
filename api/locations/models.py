@@ -4,12 +4,12 @@ from gis_ext.fields import (
 )  # Like django.contrib.gis.db.models.PointField, but with GQL support
 from locations.constants import Evidence
 
+from .constants import Survey
+
 
 class Region(models.Model):
     """
     A general geographical area.
-
-    Can be nested. Be cautious when making queries for sites in a given region
     """
 
     name = models.CharField(max_length=50)
@@ -24,34 +24,43 @@ class Site(models.Model):
     An archaeological site.
     """
 
-    SURVEY_CHOICES = (("surface", "Surface Survey"), ("excavation", "Excavation"))
-
     code = models.CharField(
         max_length=40,
-        help_text="Short, meaningful ID for the site. Assigned by the admin",
         null=False,
+        help_text="Short, meaningful identifier for the site. Assigned by the admin.",
     )
     modern_name = models.CharField(
-        max_length=50, blank=True, help_text="Name used by modern peoples",
-        null=False, default='',
+        max_length=50,
+        blank=True,
+        null=False,
+        default='',
+        help_text="Name used by modern peoples",
     )
     ancient_name = models.CharField(
-        max_length=50, blank=True, help_text="Name used by ancient peoples",
-        null=False, default='',
+        max_length=50,
+        blank=True,
+        null=False,
+        default='',
+        help_text="Name used by ancient peoples to describe the location",
     )
     coordinates = PointField(null=False, blank=False)
     area = models.FloatField(
-        null=True, blank=True, help_text="Area in Hectares. Null is 'unknown'"
+        null=True,
+        blank=True,
+        help_text="Area of the site in Hectares. Null represents 'unknown'"
     )
     population = models.FloatField(null=True, blank=True)
     survey_type = models.CharField(
         null=False,
-        blank=True, default="", choices=SURVEY_CHOICES, max_length=25
+        blank=True,
+        default="",
+        choices=Survey.choices(), max_length=25
     )
     notes = models.TextField(blank=True, default="", null=False)
     notes_easting_northing = models.TextField(
         blank=True,
         null=False,
+        editable=False,
         default="",
         help_text="value of the original coordinate system of record, if it was easting/northing. Do not use directly",
     )
@@ -74,12 +83,6 @@ class Feature(models.Model):
         - Fortification
         - Carin Burial
     """
-
-    TOMB = "tomb"
-    CARIN = "carin"
-    CEMETARY = "cemetary"
-
-    BURIAL_TYPES = [(TOMB, "Tomb"), (CARIN, "Carins"), (CEMETARY, "Cemetary")]
 
     shortname = models.CharField(max_length=200, unique=True)
     name = models.CharField(max_length=50)
@@ -120,8 +123,8 @@ class SiteFeature(models.Model):
     site = models.ForeignKey("Site", on_delete=models.CASCADE)
     feature = models.ForeignKey("Feature", on_delete=models.CASCADE)
     evidence = models.PositiveSmallIntegerField(
-        default=Evidence.TYPICAL,
-        choices=Evidence.CHOICES,
+        default=Evidence.TYPICAL.value,
+        choices=Evidence.choices(),
         help_text="How clear is the evidence for the site to have this feature?",
     )
     periods = models.ManyToManyField("Period")
