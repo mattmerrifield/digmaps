@@ -92,11 +92,11 @@ export type Query = {
   /** Site list */
   sites: Array<SiteType>;
   /** Region list */
-  regions?: Maybe<Array<Maybe<RegionType>>>;
+  regions: Array<RegionType>;
   /** SiteFeature list */
-  siteFeatures?: Maybe<Array<Maybe<SiteFeatureType>>>;
+  siteFeatures: Array<SiteFeatureType>;
   /** Feature list */
-  features?: Maybe<Array<Maybe<FeatureType>>>;
+  features: Array<FeatureType>;
 };
 
 /** Leverage multiple inheritance to expose each module's query fields as top-level fields */
@@ -148,12 +148,10 @@ export type QueryFeaturesArgs = {
 
 export type RegionType = {
   __typename?: "RegionType";
-  /** description */
-  description?: Maybe<Scalars["String"]>;
+  description: Scalars["String"];
   /** Django object unique identification field */
   id: Scalars["ID"];
-  /** name */
-  name?: Maybe<Scalars["String"]>;
+  name: Scalars["String"];
   /** Site list */
   site?: Maybe<Array<Maybe<SiteType>>>;
 };
@@ -169,15 +167,15 @@ export type RegionTypeSiteArgs = {
 
 /** An enumeration. */
 export enum SiteFeatureEvidenceEnum {
-  /** Very clear evidence */
+  /** Very Clear */
   A_100 = "A_100",
-  /** Clear evidence */
+  /** Clear */
   A_75 = "A_75",
-  /** Typical evidence */
+  /** Typical */
   A_50 = "A_50",
-  /** Unclear evidence */
+  /** Unclear */
   A_25 = "A_25",
-  /** Very unclear evidence */
+  /** Very Unclear */
   A_0 = "A_0"
 }
 

@@ -1,11 +1,18 @@
+/** @jsx jsx */
 import React, {useRef} from 'react';
+import { jsx } from "@emotion/core";
 import ReactMapGL, {Marker, NavigationControl, ViewState} from 'react-map-gl';
-import {ReactNode, useEffect, useState} from "react";
+import {ReactNode, useEffect, useState, useCallback} from "react";
 import {BoxProps, Text, Box, Flex} from "rebass";
 import {TLengthStyledSystem} from "styled-system";
 import InteractiveMap from "react-map-gl";
 import {FaMapMarker} from "react-icons/fa";
 import {useSitesQuery} from "./generated/graphql";
+import {ViewportChangeHandler} from "react-map-gl"
+import MapboxGL from 'mapbox-gl';
+import {debounce} from "lodash";
+import {Bounds} from "viewport-mercator-project";
+
 
 const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN || '';
 
@@ -16,14 +23,14 @@ const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN || '';
 
 interface SiteMarkerProps{
  site: {
-    modernName?: string
+    modernName: string
     coordinates: {
         x: number
         y: number
     }
 }}
 
-const SiteMarker = (props: SiteMarkerProps): React.ReactNode => {
+const SiteMarker: React.FC<SiteMarkerProps> = (props) => {
 
     const [name, setName] = useState(<></>);
 
@@ -39,31 +46,32 @@ const SiteMarker = (props: SiteMarkerProps): React.ReactNode => {
 
 };
 
-interface SitesMarkerProps {
-    x1: number
-    y1: number
-    x2: number
-    y2: number
+const getBounds = (map: MapboxGL.Map): Bounds => {
+    const bounds = map.getBounds();
+    return [[bounds.getEast(),  bounds.getNorth()], [bounds.getWest(), bounds.getSouth()]];
+};
 
+interface SitesMarkersProps {
+    bounds: Bounds
 }
 
-const SitesMarkers = (props: SitesMarkerProps) => {
+const SitesMarkers: React.FC<SitesMarkersProps> = (props) => {
 
-    const {x1, y1, x2, y2 } = props;
-    const rect = `(${x1}, ${y1}), (${x2}, ${y2}`;
+    const [[south, west], [north, east]] = props.bounds;
+    const rect = `(${west}, ${north}), (${east}, ${south}`;
     const {data, loading, error} = useSitesQuery({variables: {rect: rect, limit: 10000}});
 
     if (data && data.sites) {
-        return <>{data.sites.map(
-            (site, i) => {
-                return <SiteMarker key={i} site={site}/>
-            }
-        ).filter(
-            (element, i) => element
-        )}</>
+        return <React.Fragment>{data.sites.map(
+              (site, i) => {
+                    return <SiteMarker key={i} site={site}/>
+              }
+          ).filter(
+              (element, i) => element )}
+        </React.Fragment>
     }
     else {
-        return <></>
+        return null;
     }
 };
 
@@ -76,108 +84,85 @@ interface NavLocation {
     right?: number
 }
 
+
+
 interface MapProps extends BoxProps {
-    children?: ReactNode
-    width?: TLengthStyledSystem
-    height?: TLengthStyledSystem
-    navLocation?: NavLocation
+    navLocation: NavLocation
 }
 
 
-
-const Map = (props: MapProps) => {
+const Map: React.FC<MapProps> & {defaultProps: Partial<MapProps>} = (props) => {
     // A dynamically resizing, flexbox-compatible map widget!
-
-    const navLocation = props.navLocation || {bottom: 30, right: 30};
-
-    const initialState = {
-        viewport: {
-            latitude: 31.7683,
-            longitude: 35.2137,
-            zoom: 8,
-            height: props.height || '100%',
-            width: props.width || '100%'
-        },
-    };
-
-    type State = typeof initialState
-    const [state, setState] = useState<State>(initialState);
+    const [viewport, setViewport] = useState<ViewState>({latitude: 31.7683, longitude: 35.2137, zoom: 8});
+    const [bounds, setBounds] = useState<Bounds>([[0,0], [0,0]]);
+    const [height, setHeight] = useState<string | number>('100%');
+    const [width, setWidth] = useState<string | number>( '100%');
     const divRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<InteractiveMap>(null);
 
-    // Pass in a function to execute when the component finishes mounting
-    const componentDidMount = () => {
-        const divHeight = () => {
-            if (divRef && divRef.current) {
-                return divRef.current.clientHeight
-            }
-        };
 
-        const divWidth = () => {
-            if (divRef && divRef.current) {
-                return divRef.current.clientWidth
-            }
-        };
-
+    useEffect(
+      // Register the resize event listener with useEffect
+     () => {
         const resize = () => {
-            setState(prevState => ({
-                viewport: {
-                    ...prevState.viewport,
-                    height: divHeight() || initialState.viewport.height,
-                    width: divWidth() || initialState.viewport.width,
-                },
-            }));
+            if (divRef && divRef.current && divRef.current.clientHeight) {
+                setHeight(divRef.current.clientHeight);
+            }
+            if (divRef && divRef.current && divRef.current.clientWidth) {
+                setWidth(divRef.current.clientWidth);
+            }
         };
         window.addEventListener('resize', resize);
         resize();
         // Return from the first function argument another function, which will be called during unmount
         return () => window.removeEventListener('resize', resize);
-    };
-
-    useEffect(
-        // Register the resize event listener with useEffect
-        componentDidMount,
+    },
         // Second argument is an empty list => execute first argument only after monunting
         // not every time!
         []
     );
 
     // Update the viewport whenever we scroll or click on a nav control
-    const updateViewport = (viewport: ViewState) => {
-        setState(prevState => ({
-            viewport: { ...prevState.viewport, ...viewport },
-        }));
-    };
-
-    const getBounds = () => {
+    const updateViewport: ViewportChangeHandler = (viewport) => {
+        setViewport(viewport);
         if (mapRef.current) {
-            const bounds = mapRef.current.getMap().getBounds();
-            return {x1: bounds.getEast(), y1: bounds.getNorth(), x2: bounds.getWest(), y2: bounds.getSouth()};
+            const map = mapRef.current.getMap();
+            setBounds(getBounds(map));
         }
-        else
-            {
-                return {x1: 0, y1: 0, x2: 0, y2: 0}
-
-            }
     };
 
 
     return (
-        <div ref={divRef}>
+        <Flex height="100%" flexDirection="column" ref={divRef}>
             <ReactMapGL
-                {...state.viewport}
+                {...viewport}
+                width={width}
+                height={height}
                 mapboxApiAccessToken={MAPBOX_TOKEN}
                 onViewportChange={(v: ViewState) => updateViewport(v)}
                 ref={mapRef}
+                css={{
+                    flex: "1 0 auto"
+                }}
             >
-                <div style={{ position: 'absolute', ...navLocation }}>
+                <div style={{ position: 'absolute', ...props.navLocation }}>
                    <NavigationControl onViewportChange={updateViewport} />
                 </div>
-                <SitesMarkers {...getBounds()}/>
+                {}
+                <SitesMarkers bounds={bounds}/>
                 {props.children}
-            </ReactMapGL>
-        </div>
+           </ReactMapGL>
+        </Flex>
     );
+};
+
+Map.defaultProps = {
+    height: "100%",
+    width: "100%",
+    navLocation: {
+        bottom: 30,
+        right: 30,
+    }
 };
 
 export default Map;

@@ -1,5 +1,5 @@
 import graphene
-from locations import objects as locations
+from locations import graphql as locations
 
 
 class Query(locations.Query):

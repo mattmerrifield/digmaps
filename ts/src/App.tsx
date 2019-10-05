@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import './App.css';
 import {Box, Flex, Text} from "rebass";
+import { Global } from "@emotion/core"
 
 import Map from "./map"
 import { ApolloProvider } from 'react-apollo';
@@ -23,63 +24,31 @@ interface SiteMarkerProps{
     }
 }}
 
-const SiteMarker = (props: SiteMarkerProps) => {
-
-    const [name, setName] = useState(<></>);
-
-    const showName = () => setName(<Text>{props.site.modernName}</Text>);
-    const hideName = () => setName(<></>);
-
-    return (
-        <Marker latitude={props.site.coordinates.y} longitude={props.site.coordinates.x}>
-            <FaMapMarker onMouseEnter={showName} onMouseLeave={hideName}/>
-            {name}
-        </Marker>
-    )
-
-};
-
-interface SitesMarkerProps {
-    x1: number
-    y1: number
-    x2: number
-    y2: number
-
-}
-
-const SiteMarkers = (props: SitesMarkerProps) => {
-
-    const {x1, y1, x2, y2 } = props;
-    const rect = `(${x1}, ${y1}), (${x2}, ${y2}`;
-    const {data, loading, error} = useSitesQuery({variables: {rect: rect}});
-
-    if (data && data.sites) {
-        return <>{data.sites.map(
-            (site, i) => {
-                if (site && site.coordinates) {
-                    console.log(site);
-                    return <SiteMarker key={i} site={site}/>
-                }
-            }
-        ).filter(
-            (element, i) => element
-        )}</>
-    }
-    else {
-        return <></>
-    }
-};
-
 
 const client = new ApolloClient({uri: 'http://localhost:8000/api/'});
 
+
 const App: React.FC = () => {
   return (
+    <>
+      <Global styles={{
+        "html": {
+          height: "100%"
+        },
+        "body": {
+          height: "100%",
+          display: "flex",
+          flexDirection: "column"
+        },
+        "#root": {
+          flex: "1 0 auto"
+        }
+      }}/>
       <ApolloProvider client={client}>
           <ApolloHooksProvider client={client}>
-              <Flex>
-                  <Box width={1}>
-                      <Map height={1024}>
+              <Flex flexDirection="row" height="100%">
+                  <Box width={1} flex="1 0 auto">
+                    <Map height="100%">
                           <Flex>
                               <Text>Welcome to Digmaps!</Text>
                           </Flex>
@@ -88,6 +57,7 @@ const App: React.FC = () => {
               </Flex>
           </ApolloHooksProvider>
       </ApolloProvider>
+      </>
   );
 };
 

@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emotion/core": "^10.0.20",
     "@types/graphql": "^14.2.3",
     "@types/jest": "24.0.16",
+    "@types/lodash": "^4.14.141",
     "@types/node": "12.6.9",
     "@types/react": "16.8.24",
     "@types/react-dom": "16.8.5",
@@ -16,6 +18,7 @@
     "dotenv": "^8.0.0",
     "graphql": "^14.4.2",
     "graphql-tag": "^2.10.1",
+    "lodash": "^4.17.15",
     "react": "^16.8.6",
     "react-apollo": "^2.5.8",
     "react-apollo-hooks": "^0.5.0",
@@ -24,14 +27,14 @@
     "react-scripts": "3.0.1",
     "rebass": "^3.2.1",
     "styled-components": "^4.3.2",
-    "typescript": "3.5.3"
+    "typescript": "3.7.0-dev.20191004"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "get-schema": "yarn run apollo schema:download --endpoint=http://localhost/api/ graphql-schema.json",
+    "get-schema": "yarn run apollo schema:download --endpoint=http://localhost:8000/api/ graphql-schema.json",
     "gen-types": "yarn run apollo codegen:generate --localSchemaFile=graphql-schema.json --target=typescript --includes=src/**/*.ts --tagName=gql --addTypename --globalTypesFile=src/types/graphql-global-types.ts types",
     "codegen": "graphql-codegen --config codegen.yml"
   },
