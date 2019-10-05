@@ -5,6 +5,8 @@ services:
     volumes:
       # SQL files here get executed when the container first starts
       - "./db/data:/docker-entrypoint-initdb.d/"
+      # Anonymous volume for the database data goes here, so it persists between up/down restarts
+      - "/var/lib/postgresql/data"
 
   api:
     build: "./api"
