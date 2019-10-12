@@ -22,7 +22,7 @@ interface SitesDataProps {
 type FCDefault<T> = React.FC<T> & { defaultProps: Partial<T> };
 
 // Hook
-function useDebounce(value:any, delay:number) {
+export function useDebounce(value:any, delay:number) {
   // State and setters for debounced value
   const [debouncedValue, setDebouncedValue] = useState(value);
 

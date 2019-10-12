@@ -1,10 +1,11 @@
 /** @jsx jsx */
 import React, {useEffect, useRef, useState} from 'react';
 import {jsx} from "@emotion/core";
-import ReactMapGL from 'react-map-gl';
+import ReactMapGL, {Marker} from 'react-map-gl';
 import InteractiveMap, {NavigationControl, ViewportChangeHandler, ViewState} from 'react-map-gl';
 import {BoxProps, Flex} from "rebass";
 import {Bounds} from "viewport-mercator-project";
+import {useDebounce} from "./sitesData";
 
 
 const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN || '';
@@ -111,8 +112,8 @@ const Map: React.FC<MapProps> & {defaultProps: Partial<MapProps>} = (props) => {
                 }}
             >
                 <div style={{ position: 'absolute', ...props.navLocation }}>
+                    {props.render(bounds)}
                    <NavigationControl onViewportChange={updateBounds} />
-                   {props.render(bounds)}
                 </div>
            </ReactMapGL>
         </Flex>

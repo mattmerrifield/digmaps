@@ -21,6 +21,7 @@ export const SiteMarker: React.FC<SiteMarkerProps> = (props) => {
   return (
     <Marker latitude={props.site.coordinates.y} longitude={props.site.coordinates.x}>
       <FaMapMarker onMouseEnter={showName} onMouseLeave={hideName}/>
+      <Text>{props.site.modernName}</Text>
       {name}
     </Marker>
   )
