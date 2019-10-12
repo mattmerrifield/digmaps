@@ -34,7 +34,9 @@ interface SitesMarkersProps {
 }
 
 export const SitesMarkers: React.FC<SitesMarkersProps> = (props) => {
+  const markers = props.sites.map((s, i) => <SiteMarker site={s} key={i}/>);
+  console.log(markers);
   return <>
-    {props.sites.map((s, i) => <SiteMarker site={s} key={i}/>)}
+    {markers}
     </>
 };

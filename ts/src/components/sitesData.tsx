@@ -63,6 +63,7 @@ const SitesData: FCDefault<SitesDataProps> = props => {
   if (data && data.sites.length) {
     console.log(data.sites);
     const nonNullSites = data.sites.filter((element, i) => element);
+    console.log(nonNullSites);
     return props.render(nonNullSites)
   }
   return <></>

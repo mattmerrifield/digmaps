@@ -69,11 +69,15 @@ const Map: React.FC<MapProps> & {defaultProps: Partial<MapProps>} = (props) => {
             }
         };
         window.addEventListener('resize', resize);
+
+        // run at mount to initialize screen
         resize();
+        updateBounds(viewport);
+
         // Return from the first function argument another function, which will be called during unmount
         return () => window.removeEventListener('resize', resize);
     },
-        // Second argument is an empty list => execute first argument only after monunting
+        // Second argument is an empty list, so we execute first argument only after monunting, and never again
         // not every time!
         []
     );
