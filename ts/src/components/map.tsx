@@ -23,19 +23,34 @@ interface NavLocation {
     right?: number
 }
 
+interface MapBounds {
+    east: number
+    north: number
+    south: number
+    west: number
+}
+
+
+const nullIsland: MapBounds = {
+    north: 0,
+    south: 0,
+    east: 0,
+    west: 0,
+};
+
 
 
 interface MapProps extends BoxProps {
     navLocation: NavLocation
     viewport: ViewState
-    render: (bounds: Bounds) => React.ReactElement
+    render: (bounds: MapBounds) => React.ReactElement
 }
 
 
 // A dynamically resizing, flexbox-compatible map widget!
 const Map: React.FC<MapProps> & {defaultProps: Partial<MapProps>} = (props) => {
     const [viewport, setViewport] = useState<ViewState>(props.viewport);
-    const [bounds, setBounds] = useState<Bounds>([[0,0], [0,0]]);
+    const [bounds, setBounds] = useState<MapBounds>(nullIsland);
     const [height, setHeight] = useState<string | number>('100%');
     const [width, setWidth] = useState<string | number>( '100%');
     const divRef = useRef<HTMLDivElement>(null);
@@ -68,7 +83,12 @@ const Map: React.FC<MapProps> & {defaultProps: Partial<MapProps>} = (props) => {
         setViewport(viewport);
         if (mapRef.current) {
             const bounds = mapRef.current.getMap().getBounds();
-            setBounds([[bounds.getEast(),  bounds.getNorth()], [bounds.getWest(), bounds.getSouth()]])
+            setBounds({
+                east: bounds.getEast(),
+                north: bounds.getNorth(),
+                west: bounds.getWest(),
+                south: bounds.getSouth()
+            })
         }
     };
 

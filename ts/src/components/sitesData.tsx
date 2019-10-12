@@ -1,12 +1,19 @@
 // Do a graphql query to get a bunch of sites
 // A Functional component with default props. How is this not built in?
-import { Bounds } from "viewport-mercator-project";
 import { SitesQuery, useSitesQuery } from "../generated/graphql";
 import React, {useEffect, useState} from "react";
 import { ApolloError } from "apollo-client";
 
+interface MapBounds {
+    east: number
+    north: number
+    south: number
+    west: number
+}
+
+
 interface SitesDataProps {
-  bounds: Bounds;
+  bounds: MapBounds;
   render: (sites: SitesQuery["sites"]) => React.ReactElement;
   whileLoading: () => React.ReactElement; // Only renders when loading === true
   onError: (error: ApolloError) => React.ReactElement;
@@ -38,9 +45,10 @@ function useDebounce(value:any, delay:number) {
 
 const SitesData: FCDefault<SitesDataProps> = props => {
   // Construct the query parameters
-  const [[south, west], [north, east]] = useDebounce(props.bounds, 300);
+  const {south, west, north, east} = useDebounce(props.bounds, 300);
+  console.log(props.bounds);
+  console.log(south, west, north, east);
   const rect = `(${west}, ${north}), (${east}, ${south}`;
-  const [sitesList, setSitesList] = useState<SitesQuery["sites"]>([]);
 
   // Fetch new data, and if we have any, add it to the sites list
   // Strip the redundant container stuff, since we only ask for the sites
@@ -55,10 +63,9 @@ const SitesData: FCDefault<SitesDataProps> = props => {
   if (data && data.sites.length) {
     console.log(data.sites);
     const nonNullSites = data.sites.filter((element, i) => element);
-    setSitesList(nonNullSites);
+    return props.render(nonNullSites)
   }
-
-  return props.render(sitesList);
+  return <></>
 };
 
 SitesData.defaultProps = {
